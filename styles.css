@@ -382,3 +382,11 @@ a:focus-visible {
 .muted {
   color: var(--muted);
 }
+
+main a:not(.btn) {
+  color: var(--accent);
+}
+
+.pricing-card .btn {
+  margin-top: 1rem;
+}
