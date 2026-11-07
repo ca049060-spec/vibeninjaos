@@ -1,70 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pricing preview | VibeNinjaOS</title>
-  <meta name="description" content="Planned VibeNinjaOS pricing. Nothing is for sale yet.">
-  <meta name="theme-color" content="#0b0f17">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing (Planned) — VibeNinjaOS</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <div class="construction" role="note">🚧 UNDER CONSTRUCTION — Early Preview: VibeNinjaOS (vibeninjaos.app) is actively being built. Nothing on this site is sold yet.</div>
+  <div class="construction-banner" role="status">
+    🚧 <strong>UNDER CONSTRUCTION</strong> — Early Preview: VibeNinjaOS (vibeninjaos.app) is actively being built. Nothing on this site is sold yet.
+  </div>
+
   <header class="site-header">
-    <div class="wrap">
-      <a class="brand" href="index.html">Vibe<span>Ninja</span>OS</a>
-      <nav class="site-nav" aria-label="Main">
-        <ul>
+    <div class="container nav-row">
+      <a href="index.html" class="brand">🥷 VibeNinjaOS</a>
+      <nav aria-label="Main navigation">
+        <ul class="nav-list">
           <li><a href="index.html">Home</a></li>
-          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="how-it-works.html">How It Works</a></li>
           <li><a href="pricing.html" aria-current="page">Pricing</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
       </nav>
     </div>
   </header>
-  <main id="main">
-    <div class="wrap">
-      <section aria-labelledby="pricing-title">
-        <p class="eyebrow">Pricing preview</p>
-        <h1 id="pricing-title">Planned pricing</h1>
-        <p class="lede">This is a preview of what we plan to offer. Nothing is for sale yet, and prices may change before launch.</p>
-      </section>
 
-      <section aria-label="Plans">
-        <div class="grid three">
-          <div class="card">
-            <h2>VibeNinja Builder OS Kit</h2>
-            <p class="price">$49 <small>one time</small></p>
-            <p>The playbooks, room templates and starter parts to run your own AI build team.</p>
-            <span class="not-for-sale">Not for sale yet</span>
-          </div>
-          <div class="card">
-            <h2>Vendor Turnkey Pro</h2>
-            <p class="price">$299 <small>per month</small></p>
-            <p>A ready-to-run setup for businesses that want VibeNinjaOS working for their own customers.</p>
-            <span class="not-for-sale">Not for sale yet</span>
-          </div>
-          <div class="card">
-            <h2>Custom builds</h2>
-            <p class="price">By request</p>
-            <p>We build your app using VibeNinjaOS, from order to launch.</p>
-            <span class="not-for-sale">Not for sale yet</span>
-          </div>
-        </div>
-      </section>
+  <main class="container">
+    <section class="page-intro">
+      <h1>Planned Pricing</h1>
+      <p class="lead">Simple options for solo builders, shops, and custom projects. Checkout is not active while the site is under construction.</p>
+    </section>
 
-      <section class="card" aria-labelledby="pricing-cta">
-        <h2 id="pricing-cta">Hear when it's ready</h2>
-        <p>Leave your details and we'll let you know when the first plan opens.</p>
-        <div class="actions"><a class="btn btn-primary" href="contact.html">Get early access</a></div>
-      </section>
-    </div>
+    <section class="grid-3">
+      <article class="card pricing-card">
+        <h2>VibeNinja Builder OS Kit</h2>
+        <p class="price">$49 <span class="price-term">one-time (planned)</span></p>
+        <p>For solo builders and small teams who want the complete folder structure and agent rulebooks on their own computer.</p>
+        <ul>
+          <li>Read-only Playbooks &amp; Read-Write Clients folder template</li>
+          <li>Core agent role cards &amp; quality checklists</li>
+          <li>Starter Parts Warehouse layout</li>
+        </ul>
+        <a href="contact.html" class="btn btn-secondary">Request Early Notification</a>
+      </article>
+
+      <article class="card pricing-card featured">
+        <h2>Vendor Turnkey Pro</h2>
+        <p class="price">$299 <span class="price-term">per month (planned)</span></p>
+        <p>For local businesses and shops that want a hosted, ready-to-use interactive app (such as the AutoVibe visualizer) configured for their inventory.</p>
+        <ul>
+          <li>Branded interactive web app setup</li>
+          <li>Local inventory and promo updates</li>
+          <li>Ongoing maintenance and quality checks</li>
+        </ul>
+        <a href="contact.html" class="btn btn-primary">Ask About Turnkey Pro</a>
+      </article>
+
+      <article class="card pricing-card">
+        <h2>Custom Builds</h2>
+        <p class="price">By Request</p>
+        <p>Have a specific workflow, vertical tool, or internal business app you want scoped and built using VibeNinjaOS?</p>
+        <ul>
+          <li>Upfront scope and margin check before building</li>
+          <li>Built on reusable warehouse modules</li>
+          <li>Delivered with clean documentation</li>
+        </ul>
+        <a href="contact.html" class="btn btn-secondary">Request a Custom Scope</a>
+      </article>
+    </section>
   </main>
+
   <footer class="site-footer">
-    <div class="wrap">
-      <p>VibeNinjaOS · vibeninjaos.app · Early preview. Nothing here is for sale yet.</p>
+    <div class="container">
+      <p>VibeNinjaOS (vibeninjaos.app) — Site Under Construction. All questions go through our <a href="contact.html">Contact Form</a>.</p>
     </div>
   </footer>
 </body>
