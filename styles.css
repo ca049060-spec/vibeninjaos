@@ -288,3 +288,97 @@ a:focus-visible {
   position: absolute;
   left: -9999px;
 }
+
+/* Projects showcase */
+.project-grid {
+  display: grid;
+  gap: 1.25rem;
+  margin: 1rem 0 2.5rem;
+}
+
+@media (min-width: 900px) {
+  .project-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.project-card h2 {
+  margin-bottom: 0;
+}
+
+.project-card .subtitle {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.badge {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+}
+
+.badge-muted {
+  color: var(--muted);
+  border-color: var(--border);
+}
+
+.ba {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 560px) {
+  .ba { grid-template-columns: 1fr 1fr; }
+}
+
+.ba h3 {
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.project-pricing {
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+
+.pricing-label {
+  color: var(--banner-text);
+  background-color: var(--banner-bg);
+  border: 1px solid var(--banner-border);
+  border-radius: 0.375rem;
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  margin-bottom: 0.5rem;
+}
+
+.project-pricing ul {
+  padding-left: 1.25rem;
+  font-weight: 600;
+}
+
+.project-card .btn {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.project-card.placeholder {
+  border-style: dashed;
+}
+
+.muted {
+  color: var(--muted);
+}
