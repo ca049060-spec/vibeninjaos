@@ -6,11 +6,19 @@ VibeNinjaOS is a way to build real apps with AI agents without the project falli
 
 ## What's here
 
-- `index.html`: the first version of the site, a single page with the "before vs after" simulation studio. Every number on it is sample data from a simulation, and the page says so at the top.
+A plain static site (HTML and CSS only, no build step):
+
+- `index.html`: Home: the minute-25 problem from AutoVibe, how it works in 4 steps, before vs after (example figures).
+- `how-it-works.html`: the two rooms, the Parts Warehouse, margin targets (examples) and the coaching culture.
+- `pricing.html`: planned pricing, clearly marked not for sale yet.
+- `contact.html` and `thanks.html`: early-access form using Netlify Forms.
+- `styles.css`: shared dark theme, emerald accent.
+
+Every page carries an "Under construction" banner. The first prototype (the simulation studio page) is in git history and in Drive.
 
 ## Status
 
-Started 2026-11-05 from Shawn's prototype in Google Drive (`VIBENINJA_ENTERPRISE_OS_ROOT`). Not deployed anywhere yet. Personal email addresses were removed from the prototype; a real contact route still needs to be chosen.
+Started 2026-11-05 from Shawn's prototype in Google Drive (`VIBENINJA_ENTERPRISE_OS_ROOT`). Not deployed yet. Contact goes through the Netlify form only; there are no email addresses on the site.
 
 ## Working on this repo
 

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact | VibeNinjaOS</title>
+  <meta name="description" content="Get early access to VibeNinjaOS.">
+  <meta name="theme-color" content="#0b0f17">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="construction" role="note">🚧 UNDER CONSTRUCTION — Early Preview: VibeNinjaOS (vibeninjaos.app) is actively being built. Nothing on this site is sold yet.</div>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html">Vibe<span>Ninja</span>OS</a>
+      <nav class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="contact.html" aria-current="page">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <div class="wrap">
+      <section aria-labelledby="contact-title">
+        <p class="eyebrow">Contact</p>
+        <h1 id="contact-title">Get early access</h1>
+        <p class="lede">Tell us a little about what you want to build. We'll get back to you when VibeNinjaOS is ready.</p>
+      </section>
+
+      <section aria-label="Contact form">
+        <form name="contact" method="POST" action="/thanks.html" data-netlify="true" netlify-honeypot="company">
+          <input type="hidden" name="form-name" value="contact">
+          <p class="hidden-field">
+            <label for="company">Leave this empty</label>
+            <input id="company" name="company" tabindex="-1" autocomplete="off">
+          </p>
+          <div>
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div>
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+      </section>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>VibeNinjaOS · vibeninjaos.app · Early preview. Nothing here is for sale yet.</p>
+    </div>
+  </footer>
+</body>
+</html>
