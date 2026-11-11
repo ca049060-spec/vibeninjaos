@@ -1,0 +1,19 @@
+{
+  "name": "AutoVibe",
+  "tagline": "See rims, tires and a lift kit on your own truck before you buy.",
+  "slug": "autovibe",
+  "order": 10,
+  "status": "workbench",
+  "category": "Automotive",
+  "audience": "Truck and car owners, and the tire and custom shops that serve them",
+  "before": "You can't see what a lift kit or new rims will look like on your own vehicle, so you call around for shops and prices.",
+  "after": "Snap a photo of your vehicle, try rims, tires and lift kits on it, and find local shops that carry them.",
+  "try_url": "/contact.html",
+  "try_label": "Tell me when it's ready",
+  "price_note": "Price set at launch.",
+  "privacy_note": "",
+  "origin": "The project that started VibeNinjaOS. Building it in one long AI chat fell apart, so we built a better way to work.",
+  "built_with": "",
+  "repo": "",
+  "updated": "2026-11-10"
+}

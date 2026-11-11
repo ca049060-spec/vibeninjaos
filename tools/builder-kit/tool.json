@@ -1,0 +1,19 @@
+{
+  "name": "Builder Kit",
+  "tagline": "The folder setup and agent cards we use to build every tool on this site.",
+  "slug": "builder-kit",
+  "order": 13,
+  "status": "workbench",
+  "category": "For builders",
+  "audience": "People building their own tools with AI",
+  "before": "An AI build lives in one long chat with no rules. Around the half-hour mark it starts forgetting things and breaking what already worked.",
+  "after": "A ready folder layout for your own computer: a read-only playbooks room, a room for each project, and short role cards that tell each AI agent its job.",
+  "try_url": "/how-it-works.html",
+  "try_label": "See how it works",
+  "price_note": "Price set at launch.",
+  "privacy_note": "",
+  "origin": "",
+  "built_with": "",
+  "repo": "",
+  "updated": "2026-11-10"
+}

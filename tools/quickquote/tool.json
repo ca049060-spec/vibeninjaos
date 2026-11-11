@@ -1,0 +1,20 @@
+{
+  "name": "QuickQuote",
+  "tagline": "Price a driveway job on your phone, in the driveway.",
+  "slug": "quickquote",
+  "order": 1,
+  "status": "live",
+  "category": "Trades & field work",
+  "audience": "Driveway, paving and sealing contractors",
+  "before": "The estimate gets worked out on paper or in your head, then typed up again at night. Prices drift from job to job and the customer waits a day for a number.",
+  "after": "Pick the service, enter the measurements, and get a clean quote with your own prices while you are still standing in the driveway. Concrete, asphalt, gravel, pavers and sealing.",
+  "try_url": "/tools/quickquote/app/",
+  "try_label": "Open QuickQuote",
+  "price_note": "Free to use.",
+  "privacy_note": "Your prices, business details and quote history stay in your own browser. Nothing is sent to us.",
+  "origin": "Built first for Seals Go Pro, a driveway sealing business. Type your own business name in Settings.",
+  "built_with": "One web page, built with AI. Works on a phone.",
+  "repo": "https://github.com/ca049060-spec/quickquote",
+  "source_commit": "cfe9d3c30cf8df935a68920227b0979f0f3b6beb",
+  "updated": "2026-11-10"
+}

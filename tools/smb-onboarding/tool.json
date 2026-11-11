@@ -1,0 +1,19 @@
+{
+  "name": "Client Onboarding Kit",
+  "tagline": "A 20-question intake and a deadline calendar for every new client.",
+  "slug": "smb-onboarding",
+  "order": 14,
+  "status": "workbench",
+  "category": "Business operations",
+  "audience": "Bookkeepers, fractional finance teams and small service firms",
+  "before": "New clients are onboarded by hand, with scattered notes, missed deadlines and no consistent quality check.",
+  "after": "A 20-question intake that builds the client's rulebook, a calendar of their recurring deadlines, and a 5-point check on every deliverable.",
+  "try_url": "/contact.html",
+  "try_label": "Tell me when it's ready",
+  "price_note": "Price set at launch.",
+  "privacy_note": "",
+  "origin": "",
+  "built_with": "",
+  "repo": "",
+  "updated": "2026-11-10"
+}
