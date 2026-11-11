@@ -206,7 +206,7 @@ ROOT_PAGES = {
 
 
 def replace_block(text: str, name: str, new: str) -> str:
-    pattern = re.compile(rf"<!-- site:{name} -->.*?<!-- /site:{name} -->", re.S)
+    pattern = re.compile(rf"<!-- site:{name} -->.*?<!-- /site:{name} -->", re.DOTALL)
     if not pattern.search(text):
         sys.exit(f"missing <!-- site:{name} --> markers")
     return pattern.sub(lambda _: f"<!-- site:{name} -->{new}<!-- /site:{name} -->", text)
