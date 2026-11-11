@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0e1929" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<title>Seals Go Pro — Field Estimator</title>
+<title>QuickQuote — Field Estimator</title>
 <style>
   :root {
     --gold:      #f5a623;
@@ -210,8 +210,8 @@
 
 <header>
   <div class="header-left">
-    <div class="logo-icon">SGP</div>
-    <h1 id="appTitle">Seals Go Pro</h1>
+    <div class="logo-icon" id="appBadge">QQ</div>
+    <h1 id="appTitle">QuickQuote</h1>
   </div>
   <small id="dateNow"></small>
 </header>
@@ -360,11 +360,11 @@
     <details>
       <summary class="card-label" style="margin-bottom:0">My Business Info (shows on quotes)</summary>
       <div class="row2">
-        <div><label>Business name</label><input type="text" id="bizName" placeholder="Seals Go Pro" onchange="saveBiz()" /></div>
+        <div><label>Business name</label><input type="text" id="bizName" placeholder="Your business name" onchange="saveBiz()" /></div>
         <div><label>Phone</label><input type="tel" id="bizPhone" placeholder="(647) 555-0000" onchange="saveBiz()" /></div>
       </div>
       <div class="row2">
-        <div><label>Email</label><input type="email" id="bizEmail" placeholder="you@sealsgopro.com" onchange="saveBiz()" /></div>
+        <div><label>Email</label><input type="email" id="bizEmail" placeholder="you@example.com" onchange="saveBiz()" /></div>
         <div><label>License # (optional)</label><input type="text" id="bizLicense" placeholder="LIC-12345" onchange="saveBiz()" /></div>
       </div>
     </details>
@@ -434,6 +434,9 @@ const DEFAULT_PRICES = {
   margin:     { label: "Profit margin (%)",                   price: 25   },
   deposit:    { label: "Deposit required (%)",                price: 30   },
 };
+// Typed text (names, addresses, business details) goes into the page as text, never as markup.
+function esc(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
 let prices = JSON.parse(localStorage.getItem("qq_prices6") || "null") || structuredClone(DEFAULT_PRICES);
 for (const k in DEFAULT_PRICES) if (!prices[k]) prices[k] = structuredClone(DEFAULT_PRICES[k]);
 
@@ -455,12 +458,18 @@ function saveBiz() {
   const biz = {};
   BIZ_FIELDS.forEach(f => biz[f] = document.getElementById(f).value);
   localStorage.setItem("qq_biz", JSON.stringify(biz));
-  if (biz.bizName) document.getElementById("appTitle").textContent = biz.bizName;
+  showBiz(biz);
+}
+function showBiz(biz) {
+  if (!biz.bizName) return;
+  document.getElementById("appTitle").textContent = biz.bizName;
+  const initials = biz.bizName.split(" ").map(w => w[0]).filter(c => c && /[a-z0-9]/i.test(c)).join("").slice(0, 3).toUpperCase();
+  if (initials) document.getElementById("appBadge").textContent = initials;
 }
 function loadBiz() {
   const biz = JSON.parse(localStorage.getItem("qq_biz") || "{}");
   BIZ_FIELDS.forEach(f => { if (biz[f]) document.getElementById(f).value = biz[f]; });
-  if (biz.bizName) document.getElementById("appTitle").textContent = biz.bizName;
+  showBiz(biz);
   return biz;
 }
 
@@ -642,7 +651,7 @@ function renderHistory() {
   el.innerHTML = h.map((q,i) => `
     <div class="hist-row">
       <div class="hist-main">
-        <div class="hist-name">#${q.n} · ${q.name}</div>
+        <div class="hist-name">#${q.n} · ${esc(q.name)}</div>
         <div class="hist-meta">${q.date} · ${JOB_LABELS[q.service]||q.service}</div>
       </div>
       <div class="hist-total">$${q.total.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
@@ -657,15 +666,15 @@ function reprintQuote(i) { const q=getHistory()[i]; if(q){buildQuoteSheet(q);win
 function buildQuoteSheet(q) {
   const biz = loadBiz();
   const bizBlock = biz.bizName
-    ? `<div class="qs-biz"><b>${biz.bizName}</b><br>${[biz.bizPhone,biz.bizEmail].filter(Boolean).join(" · ")}${biz.bizLicense?"<br>License: "+biz.bizLicense:""}</div>`
-    : `<div class="qs-biz">Seals Go Pro</div>`;
+    ? `<div class="qs-biz"><b>${esc(biz.bizName)}</b><br>${[biz.bizPhone,biz.bizEmail].filter(Boolean).map(esc).join(" · ")}${biz.bizLicense?"<br>License: "+esc(biz.bizLicense):""}</div>`
+    : "";
   document.getElementById("quoteSheet").innerHTML = `
     <div class="qs-header">
       <div><h1>Estimate #${q.n}</h1>${bizBlock}</div>
       <div style="text-align:right"><p><b>Date:</b> ${q.date}</p><p><b>Valid for:</b> 30 days</p></div>
     </div>
-    <p><b>Customer:</b> ${q.name}${q.phone?" · "+q.phone:""}</p>
-    <p><b>Job address:</b> ${q.addr}</p>
+    <p><b>Customer:</b> ${esc(q.name)}${q.phone?" · "+esc(q.phone):""}</p>
+    <p><b>Job address:</b> ${esc(q.addr)}</p>
     <p><b>Scope:</b> ${JOB_LABELS[q.service]||q.service}${q.sqft>0?" — "+Math.round(q.sqft)+" sq ft":""}</p>
     <table>
       <tr><th>Item</th><th style="text-align:right">Amount</th></tr>
@@ -700,7 +709,7 @@ function shareQuote() {
   const d = window._quoteData;
   if (!d || !d.total) { alert("Fill in the job details first."); return; }
   const biz = loadBiz();
-  const text = `${biz.bizName||"Seals Go Pro"} — ${JOB_LABELS[d.service]}
+  const text = `${biz.bizName||"Estimate"} — ${JOB_LABELS[d.service]}
 ${document.getElementById("custName").value ? "For: "+document.getElementById("custName").value+"\n":""}${d.sqft>0?"Area: "+Math.round(d.sqft)+" sq ft\n":""}
 ${d.lines.map(l=>l[0]+" — $"+l[1].toLocaleString(undefined,{maximumFractionDigits:0})).join("\n")}
 
@@ -727,9 +736,10 @@ function resetJob() {
 
 // ── Init ──
 document.getElementById("dateNow").textContent = new Date().toLocaleDateString();
-if (!localStorage.getItem("qq_biz")) {
-  localStorage.setItem("qq_biz", JSON.stringify({bizName:"Seals Go Pro",bizPhone:"",bizEmail:"",bizLicense:""}));
-}
+(function clearOldSeed() {
+  const b = JSON.parse(localStorage.getItem("qq_biz") || "null");
+  if (b && b.bizName === "Seals Go Pro" && !b.bizPhone && !b.bizEmail && !b.bizLicense) localStorage.removeItem("qq_biz");
+})();
 loadBiz();
 renderPriceBook();
 renderSealExtras();
