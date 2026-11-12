@@ -791,6 +791,55 @@ main a:not(.btn) {
   }
 }
 
+/* Home: a warm next step right under the tools, for a reader whose business is not shown (landing loop round 12, 2026-11-11) */
+.home .ask-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px dashed #3b4a63;
+  border-radius: 0.5rem;
+}
+
+.home .ask-row-text {
+  flex: 1 1 20rem;
+  color: #cbd5e1;
+}
+
+.home .ask-row-text strong {
+  display: block;
+  color: var(--text);
+  font-size: 1.15rem;
+  margin-bottom: 0.2rem;
+}
+
+.home .ask-row-btn {
+  flex: none;
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.home .ask-row-btn::after {
+  content: "\2192" / "";
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .home .ask-row {
+    padding: 1.25rem;
+  }
+
+  .home .ask-row-btn {
+    flex: 1 1 100%;
+    text-align: center;
+    font-size: 1.05rem;
+  }
+}
+
 .home .construction-banner strong::before {
   content: "";
   display: inline-block;
