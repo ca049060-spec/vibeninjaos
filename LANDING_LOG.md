@@ -1,7 +1,7 @@
 # Landing page change log
 
 Every adjustment round on the home page, kept or not. Written by the round keeper, not by hand.
-Rounds run: 10. Kept: 10. Not kept: 0.
+Rounds run: 11. Kept: 11. Not kept: 0.
 
 | Round | Result | What was tried | Blind vote | Commit |
 |---|---|---|---|---|
@@ -14,4 +14,5 @@ Rounds run: 10. Kept: 10. Not kept: 0.
 | 7 | kept | On a phone the live QuickQuote Open button now spans the whole card with an arrow, an obvious first tap. | 3 of 3 preferred the change | 26f09db |
 | 8 | kept | The shouty capitals line above the headline is now one calm green pill with a small Canadian flag. | 3 of 3 preferred the change | 182180e |
 | 9 | kept | On a phone the Local Market Report Open button now spans its card with an arrow, matching QuickQuote. | 3 of 3 preferred the change | 4798735 |
-| 10 | kept | On a phone the two top buttons now sit as an even pair, same width and height, filling the row. | 3 of 3 preferred the change |  |
+| 10 | kept | On a phone the two top buttons now sit as an even pair, same width and height, filling the row. | 3 of 3 preferred the change | 00ca222 |
+| 11 | kept | The headline now says simple tools for small business on your phone, and the line under it names contractors. | 3 of 3 preferred the change |  |

@@ -742,6 +742,11 @@ main a:not(.btn) {
   line-height: 1.5;
 }
 
+/* Home: the headline says what you get and wraps into even lines (landing loop round 11, 2026-11-11) */
+.home h1 {
+  text-wrap: balance;
+}
+
 .home .flag-ca {
   flex: none;
   display: block;
