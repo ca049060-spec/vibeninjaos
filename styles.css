@@ -504,3 +504,627 @@ main a:not(.btn) {
 
 .workbench-list a { font-weight: 600; }
 
+/* Home, phone: header links on one tidy row (landing loop round 1, 2026-11-11) */
+@media (max-width: 600px) {
+  .home .site-header {
+    padding: 0.5rem 0 0.25rem;
+  }
+
+  .home .nav-row {
+    row-gap: 0;
+  }
+
+  .home .site-header nav {
+    width: 100%;
+  }
+
+  .home .nav-list {
+    justify-content: space-between;
+    column-gap: 0.75rem;
+    row-gap: 0;
+  }
+
+  /* The brand already links home, so the extra "Home" link is dropped here. */
+  .home .nav-list li:has(> a[aria-current="page"]) {
+    display: none;
+  }
+
+  .home .nav-list a {
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+  }
+
+  .home .brand {
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+  }
+
+  .home .hero {
+    padding-top: 2rem;
+  }
+}
+
+/* Home: the live tool stands out as the one that works today (landing loop round 2, 2026-11-11) */
+.home .tool-card:has(.status-live) {
+  border-color: var(--accent);
+  background-image: linear-gradient(180deg, rgba(16, 185, 129, 0.10), rgba(16, 185, 129, 0) 70%);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25), 0 8px 24px rgba(16, 185, 129, 0.08);
+}
+
+.home .tool-card .status-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.home .tool-card .status-live::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--accent);
+}
+
+.home .tool-card:has(.status-live) .btn {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #04130d;
+}
+
+.home .tool-card:has(.status-live) .btn:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* Home, phone: a shorter, plainer hero so the whole live tool card fits on the first screen (landing loop round 3, 2026-11-11) */
+@media (max-width: 600px) {
+  .home .hero {
+    padding-top: 1.5rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .home h1 {
+    margin-bottom: 0.75rem;
+  }
+
+  .home .lead {
+    color: #cbd5e1;
+    font-size: 1.1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .home .hero + .card-section {
+    padding-top: 1.5rem;
+  }
+}
+
+/* Home: the four build steps read as a short numbered list, not four tall boxes (landing loop round 4, 2026-11-11) */
+.home .step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  font-size: 0.95rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 600px) {
+  .home .grid-4 {
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .home .grid-4 .card {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    column-gap: 1rem;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .home .grid-4 .step-badge {
+    grid-row: span 2;
+    align-self: start;
+    margin-bottom: 0;
+  }
+
+  .home .grid-4 h3 {
+    line-height: 2rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .home .grid-4 p {
+    color: #cbd5e1;
+  }
+}
+
+/* Home: the workbench reads as a calm list of rows, each one tappable, not a wall of green underlines (landing loop round 5, 2026-11-11) */
+.home .workbench-list {
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+
+.home .workbench-list li {
+  position: relative;
+  border-left: none;
+  border-bottom: 1px solid var(--border);
+  padding: 0.85rem 2.25rem 0.85rem 0.25rem;
+  min-height: 44px;
+}
+
+.home .workbench-list li::after {
+  content: "\203A";
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.home .workbench-list a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* The whole row is the tap target, not just the tool name. */
+.home .workbench-list a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.home .workbench-list li:hover {
+  background-color: rgba(148, 163, 184, 0.06);
+}
+
+.home .workbench-list li:hover a,
+.home .workbench-list li:hover::after {
+  color: var(--accent);
+}
+
+/* Home: the "Early preview" strip is a quiet note, not an amber warning bar above the name (landing loop round 6, 2026-11-11) */
+.home .construction-banner {
+  background-color: #10151f;
+  border-bottom: 1px solid var(--border);
+  color: #cbd5e1;
+  padding: 0.5rem 1.25rem;
+  line-height: 1.5;
+}
+
+.home .construction-banner strong {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* Home, phone: the live tool's Open button spans the card with an arrow, one obvious tap (landing loop round 7, 2026-11-11) */
+@media (max-width: 600px) {
+  .home .tool-card:has(.status-live) .btn {
+    align-self: stretch;
+    text-align: center;
+    font-size: 1.05rem;
+  }
+
+  .home .tool-card:has(.status-live) .btn::after {
+    content: "\2192" / "";
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+}
+
+/* Home: the line above the headline is one calm pill with a small Canadian flag, not shouting caps that wrap (landing loop round 8, 2026-11-11) */
+.home .eyebrow {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.9rem;
+  margin-bottom: 0.9rem;
+}
+
+.home .eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 100%;
+  padding: 0.3rem 0.5rem 0.3rem 0.9rem;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  border-radius: 999px;
+  background-color: rgba(16, 185, 129, 0.10);
+  color: #34d399;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* Home: the headline says what you get and wraps into even lines (landing loop round 11, 2026-11-11) */
+.home h1 {
+  text-wrap: balance;
+}
+
+.home .flag-ca {
+  flex: none;
+  display: block;
+  border-radius: 2px;
+}
+
+/* Home, phone: every tool card ends in the same full-width Open row, so the second card no longer has a small stray box (landing loop round 9, 2026-11-11) */
+@media (max-width: 600px) {
+  .home .tool-card .btn {
+    align-self: stretch;
+    text-align: center;
+    font-size: 1.05rem;
+  }
+
+  .home .tool-card .btn::after {
+    content: "\2192" / "";
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+
+  .home .tool-card:not(:has(.status-live)) .btn {
+    border-color: #3b4a63;
+  }
+}
+
+/* Home, phone: the two hero buttons sit side by side as an even pair, same width and height, not one wide and one narrow (landing loop round 10, 2026-11-11) */
+@media (max-width: 600px) {
+  .home .cta-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .home .cta-group .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0.75rem 0.6rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+/* Home: a warm next step right under the tools, for a reader whose business is not shown (landing loop round 12, 2026-11-11) */
+.home .ask-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px dashed #3b4a63;
+  border-radius: 0.5rem;
+}
+
+.home .ask-row-text {
+  flex: 1 1 20rem;
+  color: #cbd5e1;
+}
+
+.home .ask-row-text strong {
+  display: block;
+  color: var(--text);
+  font-size: 1.15rem;
+  margin-bottom: 0.2rem;
+}
+
+.home .ask-row-btn {
+  flex: none;
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.home .ask-row-btn::after {
+  content: "\2192" / "";
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .home .ask-row {
+    padding: 1.25rem;
+  }
+
+  .home .ask-row-btn {
+    flex: 1 1 100%;
+    text-align: center;
+    font-size: 1.05rem;
+  }
+}
+
+/* Home: a drawn look at QuickQuote, copied from the real app's own fields and steps, no prices (landing loop round 13, 2026-11-11) */
+.home .qq-peek {
+  margin: 1.25rem 0 0;
+  padding: 1.25rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.home .qq-peek figcaption {
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+
+.home .qq-peek figcaption strong {
+  display: block;
+  color: var(--text);
+  font-size: 1.15rem;
+  margin-bottom: 0.2rem;
+}
+
+.home .qq-app {
+  background-color: #f0f2f6;
+  color: #111827;
+  border: 1px solid #dde3ed;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.home .qq-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  background-color: #14233a;
+  background-image: linear-gradient(135deg, #0e1929 0%, #1a2d4a 100%);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.home .qq-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 0.5rem;
+  background-color: #f5a623;
+  color: #0e1929;
+  font-size: 0.875rem;
+  font-weight: 900;
+}
+
+.home .qq-steps {
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+@media (min-width: 700px) {
+  .home .qq-steps { grid-template-columns: repeat(3, 1fr); }
+}
+
+.home .qq-step {
+  background-color: #ffffff;
+  border: 1px solid #dde3ed;
+  border-radius: 0.9rem;
+  padding: 0.85rem;
+}
+
+.home .qq-step-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  color: #111827;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.home .qq-num {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background-color: #f5a623;
+  color: #0e1929;
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.home .qq-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background-color: #f0f2f6;
+  border: 1px solid #dde3ed;
+  border-radius: 0.75rem;
+}
+
+.home .qq-tabs span {
+  padding: 0.45rem 0.2rem;
+  border-radius: 0.55rem;
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.home .qq-tabs .on {
+  background-color: #1a2d4a;
+  color: #ffffff;
+}
+
+.home .qq-fields,
+.home .qq-checks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.home .qq-field small {
+  display: block;
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.home .qq-input {
+  display: block;
+  padding: 0.3rem 0.65rem;
+  background-color: #f8faf9;
+  border: 1.5px solid #dde3ed;
+  border-radius: 0.6rem;
+}
+
+.home .qq-checks {
+  margin-top: 0.5rem;
+}
+
+.home .qq-check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.5rem;
+  background-color: #f0f2f6;
+  border: 1.5px solid #dde3ed;
+  border-radius: 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.home .qq-check.on {
+  background-color: #fffbf0;
+  border-color: #f5a623;
+}
+
+.home .qq-box {
+  flex: none;
+  position: relative;
+  width: 1rem;
+  height: 1rem;
+  background-color: #ffffff;
+  border: 2px solid #dde3ed;
+  border-radius: 0.25rem;
+}
+
+.home .qq-check.on .qq-box {
+  background-color: #f5a623;
+  border-color: #d4891a;
+}
+
+.home .qq-check.on .qq-box::after {
+  content: "";
+  position: absolute;
+  left: 0.22rem;
+  top: 0.03rem;
+  width: 0.28rem;
+  height: 0.5rem;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.home .qq-result {
+  display: block;
+  padding: 0.75rem;
+  background-color: #14233a;
+  background-image: linear-gradient(135deg, #0e1929 0%, #1a2d4a 100%);
+  color: #ffffff;
+  border-radius: 0.75rem;
+}
+
+.home .qq-result-label {
+  display: block;
+  color: #f5a623;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home .qq-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.9375rem;
+}
+
+/* Where the app shows the amount; left blank on purpose. */
+.home .qq-blank {
+  flex: none;
+  width: 3rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.home .qq-share {
+  display: block;
+  margin-top: 0.6rem;
+  padding: 0.5rem;
+  background-color: #34425a;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.6rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Phone: the look at QuickQuote sits right under the QuickQuote card, not after the second tool. */
+@media (max-width: 600px) {
+  .home .card-section:has(.qq-peek) {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .home .card-section:has(.qq-peek) > h2 {
+    margin-bottom: 0;
+  }
+
+  .home .card-section:has(.qq-peek) .tool-grid {
+    display: contents;
+  }
+
+  .home .card-section:has(.qq-peek) .tool-card {
+    order: 3;
+  }
+
+  .home .card-section:has(.qq-peek) .tool-card:has(.status-live) {
+    order: 1;
+  }
+
+  .home .qq-peek {
+    order: 2;
+    margin: 0;
+    padding: 1rem;
+  }
+
+  .home .card-section:has(.qq-peek) .ask-row {
+    order: 4;
+    margin-top: 0;
+  }
+}
+
+.home .construction-banner strong::before {
+  content: "";
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-right: 0.45rem;
+  border-radius: 50%;
+  background-color: #fbbf24;
+  vertical-align: 0.12em;
+}
+
