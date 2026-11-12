@@ -546,3 +546,35 @@ main a:not(.btn) {
   }
 }
 
+/* Home: the live tool stands out as the one that works today (landing loop round 2, 2026-11-11) */
+.home .tool-card:has(.status-live) {
+  border-color: var(--accent);
+  background-image: linear-gradient(180deg, rgba(16, 185, 129, 0.10), rgba(16, 185, 129, 0) 70%);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25), 0 8px 24px rgba(16, 185, 129, 0.08);
+}
+
+.home .tool-card .status-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.home .tool-card .status-live::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--accent);
+}
+
+.home .tool-card:has(.status-live) .btn {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #04130d;
+}
+
+.home .tool-card:has(.status-live) .btn:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
