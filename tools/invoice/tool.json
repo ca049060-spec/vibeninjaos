@@ -1,0 +1,19 @@
+{
+  "name": "Simple Invoice",
+  "tagline": "Write an invoice on your phone and save it as a PDF.",
+  "slug": "invoice",
+  "order": 4,
+  "status": "live",
+  "category": "Books & tax",
+  "audience": "Sole proprietors and small service businesses in Canada",
+  "before": "A one-off invoice means opening a spreadsheet, looking up the tax, and hoping the printout looks right.",
+  "after": "Fill in your business, the customer and the lines. The tax follows the province you pick. Print it, or save it as a PDF from the browser's print window.",
+  "try_url": "/tools/invoice/app/",
+  "try_label": "Open Simple Invoice",
+  "price_note": "Free to use.",
+  "privacy_note": "Your business details and the invoice you are writing stay in this browser. Nothing is sent to us.",
+  "origin": "Tax rates match the GST/HST Calculator on this site, from the Canada Revenue Agency general-rate table.",
+  "built_with": "One web page. The PDF is made by your browser's print window.",
+  "repo": "",
+  "updated": "2026-11-12"
+}

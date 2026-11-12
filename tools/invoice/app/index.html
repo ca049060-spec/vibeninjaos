@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0e1929">
+<title>Simple Invoice</title>
+<meta name="description" content="Write a Canadian invoice in the browser and save it as a PDF. Tax uses the general GST/HST rates.">
+<style>
+  :root {
+    --gold: #f5a623;
+    --gold-dark: #d4891a;
+    --navy: #1a2d4a;
+    --navy-deep: #0e1929;
+    --bg: #f0f2f6;
+    --card: #ffffff;
+    --ink: #111827;
+    --muted: #475569;
+    --line: #dde3ed;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.45;
+    padding-bottom: 92px;
+  }
+  header.app-head {
+    background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+    color: #fff; padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .mark {
+    width: 36px; height: 36px; border-radius: 9px; background: var(--gold); color: var(--navy-deep);
+    font-weight: 800; font-size: 0.68rem; display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  header.app-head h1 { font-size: 1.05rem; margin: 0; }
+  header.app-head p { margin: 0; color: rgba(255,255,255,0.7); font-size: 0.8rem; }
+  header.app-head a { color: #fff; font-weight: 700; text-decoration: none; font-size: 0.85rem; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 16px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow);
+  }
+  h2 { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+  label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--muted); margin: 10px 0 6px; }
+  input, select, textarea, button { font: inherit; color: var(--ink); }
+  input, select, textarea {
+    width: 100%; min-height: 48px; padding: 12px 14px; font-size: 1rem;
+    border: 1.5px solid var(--line); border-radius: 12px; background: #f8fafc;
+  }
+  textarea { min-height: 72px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: 3px solid rgba(245,166,35,0.45); border-color: var(--gold-dark); background: #fff; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .check { display: flex; align-items: center; gap: 8px; font-weight: 650; margin-top: 12px; color: var(--ink); }
+  .check input { width: 20px; height: 20px; min-height: 0; }
+  .line { border: 1px solid var(--line); border-radius: 12px; padding: 10px; margin-bottom: 10px; background: #f8fafc; }
+  .line-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .line .remove { margin-top: 8px; }
+  button.linkish, button.secondary, button.primary { cursor: pointer; border-radius: 12px; font-weight: 800; min-height: 48px; }
+  button.linkish { border: 0; background: transparent; color: #9f1239; padding: 8px 0; min-height: 44px; }
+  button.secondary { background: #fff; border: 1.5px solid var(--line); }
+  .bar {
+    position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 8px;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(255,255,255,0.96); border-top: 1px solid var(--line);
+  }
+  .bar button { flex: 1; }
+  button.primary {
+    border: 0; color: var(--navy-deep);
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  }
+  .hint, .source { color: var(--muted); font-size: 0.88rem; }
+  .source a { color: var(--navy); }
+  .err { color: #9f1239; font-weight: 700; margin: 8px 0 0; }
+  .sheet { color: #111; }
+  .sheet-top, .sheet-meta { display: flex; justify-content: space-between; gap: 16px; }
+  .sheet h3 { margin: 0 0 4px; font-size: 1.35rem; overflow-wrap: anywhere; }
+  .kicker { margin: 0; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.75rem; color: #64748b; }
+  .who { white-space: pre-wrap; margin: 0; }
+  .sheet-meta { margin: 16px 0; }
+  .s-line { padding: 8px 0; border-top: 1px solid #e5e7eb; }
+  .s-desc { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+  .s-math { display: flex; justify-content: space-between; gap: 8px; margin: 2px 0 0; }
+  .s-math strong { white-space: nowrap; }
+  .totals { margin-top: 8px; }
+  .totals div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; }
+  .totals .grand { border-top: 2px solid #111; font-weight: 800; font-size: 1.15rem; margin-top: 4px; padding-top: 8px; }
+  .fine { color: #475569; font-size: 0.8rem; white-space: pre-wrap; }
+  #custom-tax { margin-top: 8px; }
+  @media (max-width: 520px) {
+    .row2, .sheet-top, .sheet-meta { grid-template-columns: 1fr; display: grid; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .no-print { display: none !important; }
+    .wrap { max-width: none; padding: 0; }
+    .sheet { box-shadow: none; border: 0; margin: 0; padding: 0; }
+    @page { margin: 14mm; }
+  }
+</style>
+</head>
+<body>
+<header class="app-head no-print">
+  <div class="brand">
+    <div class="mark" aria-hidden="true">INV</div>
+    <div>
+      <h1>Simple Invoice</h1>
+      <p>Print it, or save a PDF from the print window</p>
+    </div>
+  </div>
+  <a href="/tools/invoice/">About</a>
+</header>
+<div class="wrap">
+  <form id="editor" class="no-print" autocomplete="off">
+    <section class="card">
+      <h2>Your business</h2>
+      <label for="businessName">Name</label>
+      <input id="businessName" placeholder="Business name">
+      <label for="businessAddress">Address</label>
+      <textarea id="businessAddress" placeholder="Street, city, province, postal code"></textarea>
+      <label for="businessExtra">Phone or email, if you want it on the invoice</label>
+      <input id="businessExtra" autocomplete="off">
+    </section>
+    <section class="card">
+      <h2>Customer</h2>
+      <label for="clientName">Name</label>
+      <input id="clientName">
+      <label for="clientAddress">Address</label>
+      <textarea id="clientAddress"></textarea>
+      <div class="row2">
+        <div>
+          <label for="invoiceNo">Invoice number</label>
+          <input id="invoiceNo" inputmode="numeric">
+        </div>
+        <div>
+          <label for="invoiceDate">Date</label>
+          <input id="invoiceDate" type="date">
+        </div>
+      </div>
+      <label for="dueDate">Due date (optional)</label>
+      <input id="dueDate" type="date">
+    </section>
+    <section class="card">
+      <h2>Lines</h2>
+      <div id="lines"></div>
+      <button type="button" class="secondary" id="add-line">Add a line</button>
+      <p class="hint">Quantity can be a whole number or up to three decimal places, such as 1.5 hours. Price is dollars.</p>
+    </section>
+    <section class="card">
+      <h2>Sales tax</h2>
+      <label for="taxMode">Rate</label>
+      <select id="taxMode"></select>
+      <label class="check"><input type="checkbox" id="pricesIncludeTax"> Prices already include this tax</label>
+      <div id="custom-tax" hidden>
+        <div class="row2">
+          <div>
+            <label for="c1name">First tax name</label>
+            <input id="c1name" placeholder="Tax">
+          </div>
+          <div>
+            <label for="c1rate">Percent</label>
+            <input id="c1rate" inputmode="decimal" placeholder="5">
+          </div>
+        </div>
+        <div class="row2">
+          <div>
+            <label for="c2name">Second tax name</label>
+            <input id="c2name" placeholder="PST">
+          </div>
+          <div>
+            <label for="c2rate">Percent</label>
+            <input id="c2rate" inputmode="decimal" placeholder="7">
+          </div>
+        </div>
+        <p class="hint">Both taxes are calculated on the price before tax. Leave a percent blank to skip it. Type 9.975 for a rate with three decimal places.</p>
+      </div>
+      <p class="source">Provincial choices use the general rates from the Canada Revenue Agency <a href="https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-which-rate/calculator.html" rel="noopener noreferrer">GST/HST calculator and rates</a> page, in effect on or after 1 April 2025. The same rates are listed on the <a href="/tools/gst-hst/app/">GST/HST calculator</a>. This is not tax advice.</p>
+      <p class="err" id="form-error" hidden></p>
+    </section>
+    <section class="card">
+      <h2>Note on the invoice</h2>
+      <textarea id="notes" placeholder="Payment instructions or a thank-you. Optional."></textarea>
+      <p class="hint" id="save-state">Saved in this browser only.</p>
+    </section>
+  </form>
+
+  <article class="card sheet" id="sheet" aria-label="Invoice preview">
+    <div class="sheet-top">
+      <div>
+        <h3 id="s-biz">Invoice</h3>
+        <p class="who" id="s-from"></p>
+      </div>
+      <div>
+        <p class="kicker">Invoice</p>
+        <p id="s-no"></p>
+        <p id="s-date"></p>
+        <p id="s-due"></p>
+      </div>
+    </div>
+    <div class="sheet-meta">
+      <div>
+        <p class="kicker">Bill to</p>
+        <p class="who" id="s-to">Add a customer</p>
+      </div>
+    </div>
+    <div id="s-lines"></div>
+    <div class="totals" id="s-totals"></div>
+    <p class="fine" id="s-notes"></p>
+  </article>
+</div>
+<div class="bar no-print">
+  <button type="button" class="secondary" id="new-invoice">New invoice</button>
+  <button type="button" class="primary" id="print">Print or save PDF</button>
+</div>
+<noscript class="no-print"><p>This page needs JavaScript. The invoice stays in your browser.</p></noscript>
+<script>
+/* calc:start */
+const DEN = 100000;
+const FEDERAL = 5000;
+const PROVINCES = [
+  { id: "AB", name: "Alberta", gst: 5000, pst: 0, taxName: "GST", pstName: "", hst: false },
+  { id: "BC", name: "British Columbia", gst: 5000, pst: 7000, taxName: "GST", pstName: "PST", hst: false },
+  { id: "MB", name: "Manitoba", gst: 5000, pst: 7000, taxName: "GST", pstName: "RST", hst: false },
+  { id: "NB", name: "New Brunswick", gst: 15000, pst: 0, taxName: "HST", pstName: "", hst: true },
+  { id: "NL", name: "Newfoundland and Labrador", gst: 15000, pst: 0, taxName: "HST", pstName: "", hst: true },
+  { id: "NT", name: "Northwest Territories", gst: 5000, pst: 0, taxName: "GST", pstName: "", hst: false },
+  { id: "NS", name: "Nova Scotia", gst: 14000, pst: 0, taxName: "HST", pstName: "", hst: true },
+  { id: "NU", name: "Nunavut", gst: 5000, pst: 0, taxName: "GST", pstName: "", hst: false },
+  { id: "ON", name: "Ontario", gst: 13000, pst: 0, taxName: "HST", pstName: "", hst: true },
+  { id: "PE", name: "Prince Edward Island", gst: 15000, pst: 0, taxName: "HST", pstName: "", hst: true },
+  { id: "QC", name: "Quebec", gst: 5000, pst: 9975, taxName: "GST", pstName: "QST", hst: false },
+  { id: "SK", name: "Saskatchewan", gst: 5000, pst: 6000, taxName: "GST", pstName: "PST", hst: false },
+  { id: "YT", name: "Yukon", gst: 5000, pst: 0, taxName: "GST", pstName: "", hst: false }
+];
+
+function roundMul(cents, parts) {
+  return Math.floor((cents * parts + DEN / 2) / DEN);
+}
+
+function sumTaxes(base, partsList) {
+  const taxes = partsList.map((part) => ({
+    name: part.name,
+    parts: part.parts,
+    cents: roundMul(base, part.parts)
+  }));
+  const taxSum = taxes.reduce((sum, tax) => sum + tax.cents, 0);
+  return { base, taxes, total: base + taxSum, adjusted: false };
+}
+
+function fromTotal(total, partsList) {
+  const combined = partsList.reduce((sum, part) => sum + part.parts, 0);
+  if (!combined) return { base: total, taxes: [], total, adjusted: false };
+  const divisor = DEN + combined;
+  let base = Math.floor((total * DEN + Math.floor(divisor / 2)) / divisor);
+  let result = sumTaxes(base, partsList);
+  let drift = total - result.total;
+  if (drift === 0) return result;
+  const nudged = sumTaxes(base + drift, partsList);
+  if (nudged.total === total) return nudged;
+  result.taxes[result.taxes.length - 1].cents += drift;
+  result.total = total;
+  result.adjusted = true;
+  return result;
+}
+
+function partsOf(prov) {
+  const list = [{ name: prov.taxName, parts: prov.gst }];
+  if (prov.pst) list.push({ name: prov.pstName, parts: prov.pst });
+  return list;
+}
+
+function rateText(parts) {
+  return (parts / 1000).toFixed(3).replace(/0+$/, "").replace(/\.$/, "") + "%";
+}
+/* calc:end */
+
+const KEY = "vibeninjaos.invoice.v1";
+const $ = (id) => document.getElementById(id);
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function todayISO() {
+  const now = new Date();
+  return now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+}
+function prettyDate(iso) {
+  if (!iso) return "";
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!match) return iso;
+  return Number(match[3]) + " " + MONTHS[Number(match[2]) - 1] + " " + match[1];
+}
+function money(cents) {
+  const sign = cents < 0 ? "-" : "";
+  const abs = Math.abs(cents);
+  return sign + "$" + Math.floor(abs / 100).toLocaleString("en-CA") + "." + String(abs % 100).padStart(2, "0");
+}
+function parseMoney(raw) {
+  let text = String(raw).trim().replace(/\s/g, "").replace(/^\$/, "");
+  if (!text) return null;
+  if (text.includes(",") && text.includes(".")) {
+    text = text.lastIndexOf(",") > text.lastIndexOf(".") ? text.replace(/\./g, "").replace(",", ".") : text.replace(/,/g, "");
+  } else if (text.includes(",")) {
+    const bits = text.split(",");
+    text = bits.length === 2 && bits[1].length <= 2 ? bits[0] + "." + bits[1] : text.replace(/,/g, "");
+  }
+  if (!/^\d+(\.\d{1,2})?$/.test(text)) return undefined;
+  const [whole, frac = ""] = text.split(".");
+  if (whole.length > 8) return undefined;
+  return Number(whole) * 100 + Number((frac + "00").slice(0, 2));
+}
+function parseQty(raw) {
+  const text = String(raw).trim().replace(",", ".");
+  if (!text) return null;
+  if (!/^\d+(\.\d{1,3})?$/.test(text)) return undefined;
+  const [whole, frac = ""] = text.split(".");
+  if (whole.length > 7) return undefined;
+  return Number(whole) * 1000 + Number((frac + "000").slice(0, 3));
+}
+function lineCents(qtyThousandths, priceCents) {
+  const product = qtyThousandths * priceCents;
+  if (!Number.isSafeInteger(product)) return undefined;
+  return Math.floor((product + 500) / 1000);
+}
+function parsePercent(raw) {
+  const text = String(raw).trim().replace("%", "").replace(",", ".");
+  if (!text) return 0;
+  if (!/^\d+(\.\d{1,3})?$/.test(text)) return null;
+  const [whole, frac = ""] = text.split(".");
+  const parts = Number(whole) * 1000 + Number((frac + "000").slice(0, 3));
+  if (parts > 100000) return null;
+  return parts;
+}
+function qtyLabel(thousandths, raw) {
+  if (thousandths == null) return raw;
+  const whole = Math.floor(thousandths / 1000);
+  const frac = String(thousandths % 1000).padStart(3, "0").replace(/0+$/, "");
+  return frac ? whole + "." + frac : String(whole);
+}
+
+const taxMode = $("taxMode");
+const none = document.createElement("option");
+none.value = "none";
+none.textContent = "No sales tax";
+taxMode.appendChild(none);
+PROVINCES.forEach((prov) => {
+  const option = document.createElement("option");
+  option.value = prov.id;
+  const extra = prov.pst ? " + " + prov.pstName + " " + rateText(prov.pst) : "";
+  option.textContent = prov.name + " — " + prov.taxName + " " + rateText(prov.gst) + extra;
+  if (prov.id === "ON") option.selected = true;
+  taxMode.appendChild(option);
+});
+const custom = document.createElement("option");
+custom.value = "custom";
+custom.textContent = "Custom rates";
+taxMode.appendChild(custom);
+
+function blankLine() {
+  return { desc: "", qty: "1", price: "" };
+}
+function makeLine(data) {
+  const row = document.createElement("div");
+  row.className = "line";
+  const descLabel = document.createElement("label");
+  descLabel.textContent = "Description";
+  const desc = document.createElement("input");
+  desc.className = "desc";
+  desc.value = data.desc || "";
+  descLabel.appendChild(desc);
+  const grid = document.createElement("div");
+  grid.className = "line-grid";
+  [["Quantity", "qty", data.qty || "1", "decimal"], ["Price", "price", data.price || "", "decimal"]].forEach(([label, cls, value, mode]) => {
+    const wrap = document.createElement("label");
+    wrap.textContent = label;
+    const input = document.createElement("input");
+    input.className = cls;
+    input.inputMode = mode;
+    input.value = value;
+    wrap.appendChild(input);
+    grid.appendChild(wrap);
+  });
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "linkish remove";
+  remove.textContent = "Remove line";
+  remove.addEventListener("click", () => {
+    if (document.querySelectorAll(".line").length === 1) {
+      desc.value = "";
+      row.querySelector(".qty").value = "1";
+      row.querySelector(".price").value = "";
+    } else {
+      row.remove();
+    }
+    persist();
+  });
+  row.append(descLabel, grid, remove);
+  return row;
+}
+
+function readLines() {
+  return [...document.querySelectorAll(".line")].map((row) => ({
+    desc: row.querySelector(".desc").value,
+    qty: row.querySelector(".qty").value,
+    price: row.querySelector(".price").value
+  }));
+}
+
+function snapshot() {
+  return {
+    businessName: $("businessName").value,
+    businessAddress: $("businessAddress").value,
+    businessExtra: $("businessExtra").value,
+    clientName: $("clientName").value,
+    clientAddress: $("clientAddress").value,
+    invoiceNo: $("invoiceNo").value,
+    invoiceDate: $("invoiceDate").value,
+    dueDate: $("dueDate").value,
+    taxMode: taxMode.value,
+    pricesIncludeTax: $("pricesIncludeTax").checked,
+    c1name: $("c1name").value,
+    c1rate: $("c1rate").value,
+    c2name: $("c2name").value,
+    c2rate: $("c2rate").value,
+    notes: $("notes").value,
+    lines: readLines()
+  };
+}
+
+function taxParts(data) {
+  if (data.taxMode === "none") return [];
+  if (data.taxMode === "custom") {
+    const specs = [[data.c1name, data.c1rate], [data.c2name, data.c2rate]];
+    const parts = [];
+    for (const [name, raw] of specs) {
+      if (!String(raw).trim()) continue;
+      const parsed = parsePercent(raw);
+      if (parsed == null) return undefined;
+      if (parsed > 0) parts.push({ name: (name || "").trim() || "Tax", parts: parsed });
+    }
+    return parts;
+  }
+  const prov = PROVINCES.find((item) => item.id === data.taxMode);
+  if (!prov) return [];
+  return partsOf(prov).map((part) => ({ ...part, hst: prov.hst && part.name === prov.taxName }));
+}
+
+function setText(id, text) {
+  $(id).textContent = text;
+}
+
+function renderSheet() {
+  const data = snapshot();
+  const error = $("form-error");
+  error.hidden = true;
+  setText("s-biz", data.businessName.trim() || "Your business");
+  setText("s-from", [data.businessAddress.trim(), data.businessExtra.trim()].filter(Boolean).join("\n"));
+  setText("s-no", data.invoiceNo.trim() ? "No. " + data.invoiceNo.trim() : "");
+  setText("s-date", data.invoiceDate ? "Date " + prettyDate(data.invoiceDate) : "");
+  setText("s-due", data.dueDate ? "Due " + prettyDate(data.dueDate) : "");
+  const to = [data.clientName.trim(), data.clientAddress.trim()].filter(Boolean).join("\n");
+  setText("s-to", to || "Add a customer");
+  const linesEl = $("s-lines");
+  linesEl.replaceChildren();
+  const totals = $("s-totals");
+  totals.replaceChildren();
+  let subtotal = 0;
+  let problem = "";
+  data.lines.forEach((line) => {
+    const desc = line.desc.trim();
+    const qtyEmpty = !String(line.qty).trim();
+    const priceEmpty = !String(line.price).trim();
+    if (!desc && qtyEmpty && priceEmpty) return;
+    if (!desc && priceEmpty) return;
+    const qty = parseQty(line.qty);
+    const price = parseMoney(line.price);
+    const cents = qty == null || price == null ? undefined : lineCents(qty, price);
+    const block = document.createElement("div");
+    block.className = "s-line";
+    const title = document.createElement("p");
+    title.className = "s-desc";
+    title.textContent = desc || "Line";
+    const math = document.createElement("p");
+    math.className = "s-math";
+    if (cents === undefined) {
+      problem = problem || "Check the quantity and price on each line. Use numbers such as 2 and 100.00.";
+      math.textContent = "Check this line";
+    } else {
+      if (!Number.isSafeInteger(subtotal + cents)) {
+        problem = problem || "That invoice is too large to add up here.";
+      } else {
+        subtotal += cents;
+      }
+      const left = document.createElement("span");
+      left.textContent = qtyLabel(qty, line.qty) + " × " + money(price);
+      const right = document.createElement("strong");
+      right.textContent = money(cents);
+      math.append(left, right);
+    }
+    block.append(title, math);
+    linesEl.appendChild(block);
+  });
+  if (!linesEl.childElementCount) {
+    const empty = document.createElement("p");
+    empty.className = "fine";
+    empty.textContent = "No lines yet.";
+    linesEl.appendChild(empty);
+  }
+  const parts = taxParts(data);
+  if (parts === undefined) problem = problem || "Custom tax percents can have up to three decimal places, and cannot be over 100.";
+  const safeParts = Array.isArray(parts) ? parts : [];
+  const priced = (data.pricesIncludeTax && safeParts.length) ? fromTotal(subtotal, safeParts) : sumTaxes(subtotal, safeParts);
+  priced.taxes.forEach((tax, index) => { tax.hst = Boolean(safeParts[index] && safeParts[index].hst); });
+  function totalRow(label, cents, grand) {
+    const row = document.createElement("div");
+    if (grand) row.className = "grand";
+    const left = document.createElement("span");
+    left.textContent = label;
+    const right = document.createElement("span");
+    right.textContent = money(cents);
+    row.append(left, right);
+    totals.appendChild(row);
+  }
+  if (safeParts.length) totalRow(data.pricesIncludeTax ? "Lines, tax included" : "Subtotal", data.pricesIncludeTax ? priced.total : priced.base);
+  if (data.pricesIncludeTax && safeParts.length) totalRow("Price before tax", priced.base);
+  else if (!safeParts.length) totalRow("Subtotal", priced.base);
+  priced.taxes.forEach((tax) => {
+    let label = tax.name + " " + rateText(tax.parts);
+    if (tax.hst) label = "HST " + rateText(tax.parts) + " (5% federal + " + rateText(tax.parts - FEDERAL) + " provincial)";
+    totalRow(label, tax.cents);
+  });
+  totalRow("Total", priced.total, true);
+  const notes = [];
+  if (data.notes.trim()) notes.push(data.notes.trim());
+  if (priced.adjusted) notes.push("Tax is rounded so the total matches the line amounts.");
+  setText("s-notes", notes.join("\n\n"));
+  if (problem) {
+    error.hidden = false;
+    error.textContent = problem;
+  }
+  return !problem;
+}
+
+function persist() {
+  $("custom-tax").hidden = taxMode.value !== "custom";
+  $("pricesIncludeTax").disabled = taxMode.value === "none";
+  if (taxMode.value === "none") $("pricesIncludeTax").checked = false;
+  const data = snapshot();
+  try {
+    localStorage.setItem(KEY, JSON.stringify(data));
+    $("save-state").textContent = "Saved in this browser. Nothing is sent to us.";
+  } catch (err) {
+    $("save-state").textContent = "This browser did not store the invoice. It remains on the page until you leave.";
+  }
+  renderSheet();
+}
+
+function load() {
+  let data = null;
+  try { data = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (err) { data = null; }
+  if (!data || typeof data !== "object") data = {};
+  ["businessName","businessAddress","businessExtra","clientName","clientAddress","invoiceNo","dueDate","c1name","c1rate","c2name","c2rate","notes"].forEach((id) => {
+    if (typeof data[id] === "string") $(id).value = data[id];
+  });
+  $("invoiceDate").value = typeof data.invoiceDate === "string" && data.invoiceDate ? data.invoiceDate : todayISO();
+  if (typeof data.taxMode === "string" && [...taxMode.options].some((option) => option.value === data.taxMode)) taxMode.value = data.taxMode;
+  $("pricesIncludeTax").checked = Boolean(data.pricesIncludeTax);
+  const storedLines = Array.isArray(data.lines) && data.lines.length ? data.lines : [blankLine()];
+  const host = $("lines");
+  host.replaceChildren();
+  storedLines.forEach((line) => host.appendChild(makeLine(line && typeof line === "object" ? line : blankLine())));
+  persist();
+}
+
+$("add-line").addEventListener("click", () => {
+  $("lines").appendChild(makeLine(blankLine()));
+  persist();
+});
+document.getElementById("editor").addEventListener("input", persist);
+document.getElementById("editor").addEventListener("submit", (event) => event.preventDefault());
+taxMode.addEventListener("change", persist);
+$("print").addEventListener("click", () => {
+  const ok = renderSheet();
+  if (!ok) {
+    $("form-error").scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  window.print();
+});
+$("new-invoice").addEventListener("click", () => {
+  const current = $("invoiceNo").value.trim();
+  if (!confirm("Start a new invoice? Your business name and address stay.")) return;
+  $("clientName").value = "";
+  $("clientAddress").value = "";
+  $("dueDate").value = "";
+  $("notes").value = "";
+  $("invoiceDate").value = todayISO();
+  if (/^\d+$/.test(current)) $("invoiceNo").value = String(Number(current) + 1);
+  $("lines").replaceChildren(makeLine(blankLine()));
+  persist();
+});
+load();
+</script>
+</body>
+</html>

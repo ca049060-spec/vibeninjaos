@@ -1,0 +1,19 @@
+{
+  "name": "Expense & Mileage Log",
+  "tagline": "Keep job expenses and kilometres on your phone, then download a CSV.",
+  "slug": "expense-log",
+  "order": 5,
+  "status": "live",
+  "category": "Books & tax",
+  "audience": "Sole proprietors and small businesses that track spending and driving",
+  "before": "Receipts live in a glove box and kilometres live in a notes app. At tax time you retype both.",
+  "after": "Log an expense or a trip in a few fields. The list stays on this phone or computer, and you can download a CSV for your bookkeeper.",
+  "try_url": "/tools/expense-log/app/",
+  "try_label": "Open the log",
+  "price_note": "Free to use.",
+  "privacy_note": "Entries stay in this browser. Clearing the browser's site data deletes them. Nothing is sent to us.",
+  "origin": "",
+  "built_with": "One web page. The CSV is built in the browser.",
+  "repo": "",
+  "updated": "2026-11-12"
+}
