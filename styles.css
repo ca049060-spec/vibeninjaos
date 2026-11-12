@@ -691,3 +691,28 @@ main a:not(.btn) {
   color: var(--accent);
 }
 
+/* Home: the "Early preview" strip is a quiet note, not an amber warning bar above the name (landing loop round 6, 2026-11-11) */
+.home .construction-banner {
+  background-color: #10151f;
+  border-bottom: 1px solid var(--border);
+  color: #cbd5e1;
+  padding: 0.5rem 1.25rem;
+  line-height: 1.5;
+}
+
+.home .construction-banner strong {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.home .construction-banner strong::before {
+  content: "";
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-right: 0.45rem;
+  border-radius: 50%;
+  background-color: #fbbf24;
+  vertical-align: 0.12em;
+}
+
