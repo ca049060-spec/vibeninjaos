@@ -705,6 +705,21 @@ main a:not(.btn) {
   font-weight: 600;
 }
 
+/* Home, phone: the live tool's Open button spans the card with an arrow, one obvious tap (landing loop round 7, 2026-11-11) */
+@media (max-width: 600px) {
+  .home .tool-card:has(.status-live) .btn {
+    align-self: stretch;
+    text-align: center;
+    font-size: 1.05rem;
+  }
+
+  .home .tool-card:has(.status-live) .btn::after {
+    content: "\2192" / "";
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+}
+
 .home .construction-banner strong::before {
   content: "";
   display: inline-block;
