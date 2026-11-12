@@ -645,3 +645,49 @@ main a:not(.btn) {
   }
 }
 
+/* Home: the workbench reads as a calm list of rows, each one tappable, not a wall of green underlines (landing loop round 5, 2026-11-11) */
+.home .workbench-list {
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+
+.home .workbench-list li {
+  position: relative;
+  border-left: none;
+  border-bottom: 1px solid var(--border);
+  padding: 0.85rem 2.25rem 0.85rem 0.25rem;
+  min-height: 44px;
+}
+
+.home .workbench-list li::after {
+  content: "\203A";
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.home .workbench-list a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* The whole row is the tap target, not just the tool name. */
+.home .workbench-list a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.home .workbench-list li:hover {
+  background-color: rgba(148, 163, 184, 0.06);
+}
+
+.home .workbench-list li:hover a,
+.home .workbench-list li:hover::after {
+  color: var(--accent);
+}
+
