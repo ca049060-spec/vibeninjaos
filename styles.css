@@ -720,6 +720,34 @@ main a:not(.btn) {
   }
 }
 
+/* Home: the line above the headline is one calm pill with a small Canadian flag, not shouting caps that wrap (landing loop round 8, 2026-11-11) */
+.home .eyebrow {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.9rem;
+  margin-bottom: 0.9rem;
+}
+
+.home .eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 100%;
+  padding: 0.3rem 0.5rem 0.3rem 0.9rem;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  border-radius: 999px;
+  background-color: rgba(16, 185, 129, 0.10);
+  color: #34d399;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.home .flag-ca {
+  flex: none;
+  display: block;
+  border-radius: 2px;
+}
+
 .home .construction-banner strong::before {
   content: "";
   display: inline-block;
