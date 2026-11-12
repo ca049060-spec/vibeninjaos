@@ -1,7 +1,7 @@
 # Landing page change log
 
 Every adjustment round on the home page, kept or not. Written by the round keeper, not by hand.
-Rounds run: 12. Kept: 12. Not kept: 0.
+Rounds run: 13. Kept: 13. Not kept: 0.
 
 | Round | Result | What was tried | Blind vote | Commit |
 |---|---|---|---|---|
@@ -16,4 +16,5 @@ Rounds run: 12. Kept: 12. Not kept: 0.
 | 9 | kept | On a phone the Local Market Report Open button now spans its card with an arrow, matching QuickQuote. | 3 of 3 preferred the change | 4798735 |
 | 10 | kept | On a phone the two top buttons now sit as an even pair, same width and height, filling the row. | 3 of 3 preferred the change | 00ca222 |
 | 11 | kept | The headline now says simple tools for small business on your phone, and the line under it names contractors. | 3 of 3 preferred the change | c89fd7c |
-| 12 | kept | Under the two tools, a dashed card asks Not your kind of business? and offers a Tell us the job button. | 2 of 3 preferred the change |  |
+| 12 | kept | Under the two tools, a dashed card asks Not your kind of business? and offers a Tell us the job button. | 2 of 3 preferred the change | 1b71922 |
+| 13 | kept | Right under the QuickQuote card, a drawn app screen shows its three steps: pick the job, measure, text the quote. | 3 of 3 preferred the change |  |
