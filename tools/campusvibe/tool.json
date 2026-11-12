@@ -1,0 +1,19 @@
+{
+  "name": "CampusVibe",
+  "tagline": "A semester planner for college and university students.",
+  "slug": "campusvibe",
+  "order": 11,
+  "status": "workbench",
+  "category": "Students",
+  "audience": "College and university students",
+  "before": "Syllabi, class times, due dates and money are spread across emails, PDFs and a dozen apps.",
+  "after": "One planner: class schedule, assignment countdowns, study blocks and a simple budget.",
+  "try_url": "/contact.html",
+  "try_label": "Tell me when it's ready",
+  "price_note": "Price set at launch.",
+  "privacy_note": "",
+  "origin": "",
+  "built_with": "",
+  "repo": "",
+  "updated": "2026-11-10"
+}

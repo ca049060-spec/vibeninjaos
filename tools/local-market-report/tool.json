@@ -1,0 +1,19 @@
+{
+  "name": "Local Market Report",
+  "tagline": "Ask a business question about a Canadian town. Get the answer from Statistics Canada, with the source on every number.",
+  "slug": "local-market-report",
+  "order": 2,
+  "status": "by-request",
+  "category": "Business data",
+  "audience": "Small business owners, people opening a business, bookkeepers and advisors",
+  "before": "You want to know if a town can support another coffee shop, a contractor or a store. The numbers exist at Statistics Canada, but they are spread over hundreds of tables and hard to find.",
+  "after": "You ask the question in plain words. The tool finds the right Statistics Canada tables, pulls the numbers for that town, and writes a short report. Every number names the table it came from.",
+  "try_url": "/contact.html",
+  "try_label": "Ask for a report",
+  "price_note": "Planned: $149 per report. The first reports are done by request while the tool is being finished.",
+  "privacy_note": "Uses public Statistics Canada data only.",
+  "origin": "Internal name: StatCan Atlas. It runs on our own computer today, so reports are made by request instead of online.",
+  "built_with": "Built with AI agents on the Statistics Canada open data service.",
+  "repo": "",
+  "updated": "2026-11-10"
+}

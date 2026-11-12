@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0e1929" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>QuickQuote — Field Estimator</title>
+<style>
+  :root {
+    --gold:      #f5a623;
+    --gold-dark: #d4891a;
+    --navy:      #1a2d4a;
+    --navy-deep: #0e1929;
+    --bg:        #f0f2f6;
+    --card:      #ffffff;
+    --ink:       #111827;
+    --muted:     #64748b;
+    --line:      #dde3ed;
+    --shadow:    0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.07);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: var(--ink);
+    padding-bottom: 100px; -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 100%);
+    color: white; padding: max(env(safe-area-inset-top), 16px) 20px 16px;
+    position: sticky; top: 0; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.35);
+  }
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 36px; height: 36px; background: var(--gold); border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 900; color: var(--navy-deep); letter-spacing: -0.03em;
+    box-shadow: 0 2px 8px rgba(245,166,35,0.5);
+  }
+  header h1 { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; }
+  header small { opacity: 0.55; font-size: 0.8rem; }
+
+  .wrap { max-width: 560px; margin: 0 auto; padding: 16px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; padding: 20px; margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .card-label {
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); font-weight: 700; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+  label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--muted); margin: 12px 0 5px; }
+  input, select {
+    width: 100%; padding: 13px 14px; font-size: 1rem;
+    border: 1.5px solid var(--line); border-radius: 12px;
+    background: #f8faf9; color: var(--ink);
+    transition: border-color 0.15s, box-shadow 0.15s; -webkit-appearance: none;
+  }
+  input:focus, select:focus {
+    outline: none; border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(245,166,35,0.18); background: white;
+  }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  /* ── Service tabs (3 tabs) ── */
+  .tabs {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    background: var(--bg); border-radius: 14px; padding: 4px; gap: 4px;
+    border: 1px solid var(--line);
+  }
+  .tabs button {
+    border: none; background: transparent; padding: 12px 4px;
+    border-radius: 10px; font-size: 0.8rem; font-weight: 700;
+    color: var(--muted); cursor: pointer; transition: all 0.15s; line-height: 1.3;
+  }
+  .tabs button.on {
+    background: var(--navy); color: white;
+    box-shadow: 0 2px 8px rgba(14,25,41,0.25);
+  }
+  .tabs button span { display: block; font-size: 1.4rem; margin-bottom: 3px; }
+
+  /* ── Checkboxes ── */
+  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+  .check-item {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg); border: 1.5px solid var(--line);
+    border-radius: 10px; padding: 11px 12px; cursor: pointer;
+    transition: all 0.15s; user-select: none;
+  }
+  .check-item.checked { border-color: var(--gold); background: #fffbf0; }
+  .check-item input[type=checkbox] { display: none; }
+  .checkmark {
+    width: 18px; height: 18px; border-radius: 5px;
+    border: 2px solid var(--line); background: white; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .check-item.checked .checkmark { background: var(--gold); border-color: var(--gold-dark); }
+  .checkmark::after { content: '✓'; color: white; font-size: 11px; font-weight: 900; display: none; }
+  .check-item.checked .checkmark::after { display: block; }
+  .check-item .check-label { font-size: 0.82rem; font-weight: 600; color: var(--ink); line-height: 1.2; }
+
+  /* ── Result card ── */
+  .result {
+    background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 100%);
+    color: white; border: none; box-shadow: var(--shadow-lg);
+  }
+  .result .card-label { color: var(--gold); }
+  .result .card-label::after { background: rgba(255,255,255,0.15); }
+  .total-row { display: flex; align-items: flex-end; justify-content: space-between; }
+  .big { font-size: 3rem; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+  .per-unit { font-size: 0.85rem; opacity: 0.65; text-align: right; }
+  .deposit-chip {
+    display: inline-block; margin-top: 10px; padding: 5px 12px;
+    background: rgba(255,255,255,0.12); border-radius: 99px; font-size: 0.8rem; font-weight: 600;
+  }
+  .breakdown { margin-top: 14px; font-size: 0.9rem; }
+  .breakdown-row { display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.12); }
+  .breakdown-row.total-line { border-top: 1px solid rgba(255,255,255,0.3); font-weight: 700; margin-top: 4px; padding-top: 10px; }
+  .share-btn {
+    width: 100%; margin-top: 14px; padding: 12px;
+    background: rgba(255,255,255,0.14); color: white;
+    border: 1px solid rgba(255,255,255,0.25); border-radius: 12px;
+    font-size: 0.95rem; font-weight: 700; cursor: pointer;
+  }
+  .share-btn:active { background: rgba(255,255,255,0.25); }
+
+  /* ── History ── */
+  .hist-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .hist-row:last-child { border-bottom: none; }
+  .hist-main { flex: 1; min-width: 0; }
+  .hist-name { font-weight: 700; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hist-meta { font-size: 0.78rem; color: var(--muted); }
+  .hist-total { font-weight: 800; font-size: 0.95rem; color: var(--navy); }
+  .hist-btn { border: none; background: var(--bg); border-radius: 8px; padding: 8px 10px; font-size: 0.8rem; cursor: pointer; font-weight: 700; }
+  .hist-del { color: #b91c1c; }
+  .empty-note { font-size: 0.85rem; color: var(--muted); text-align: center; padding: 8px 0; }
+
+  /* ── Price book ── */
+  .pb-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); gap: 12px; }
+  .pb-row:last-child { border-bottom: none; }
+  .pb-label { font-size: 0.88rem; color: var(--ink); flex: 1; }
+  .pb-input { width: 100px; padding: 8px 10px; font-size: 0.95rem; font-weight: 600; text-align: right; flex-shrink: 0; }
+
+  /* ── Supplier links ── */
+  .sup-link {
+    display: flex; align-items: center; gap: 12px; padding: 13px 14px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+    margin-bottom: 8px; text-decoration: none; color: var(--navy);
+    font-weight: 600; font-size: 0.9rem; transition: all 0.15s;
+  }
+  .sup-link:hover { background: #fff8ec; border-color: var(--gold); }
+  .sup-link .sup-icon { font-size: 1.3rem; width: 28px; text-align: center; }
+  .sup-link .sup-text { flex: 1; }
+  .sup-link .sup-arrow { opacity: 0.4; font-size: 0.8rem; }
+
+  .hint { font-size: 0.78rem; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
+  /* ── Bottom actions ── */
+  .actions {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    padding: 12px 16px max(env(safe-area-inset-bottom), 14px);
+    display: flex; gap: 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .actions button {
+    flex: 1; padding: 15px; font-size: 1rem; font-weight: 800;
+    border-radius: 14px; border: none; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--navy-deep); box-shadow: 0 4px 14px rgba(245,166,35,0.45);
+  }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-secondary { background: var(--bg); color: var(--ink); border: 1.5px solid var(--line) !important; }
+
+  /* ── Print ── */
+  @media print {
+    header, .actions, .no-print { display: none !important; }
+    body { background: white; padding: 0; }
+  }
+  #quoteSheet { display: none; }
+  @media print { #quoteSheet { display: block; } .app-ui { display: none; } }
+  #quoteSheet { font-size: 1rem; line-height: 1.6; padding: 32px; font-family: Georgia, serif; }
+  #quoteSheet .qs-header { display: flex; justify-content: space-between; margin-bottom: 24px; border-bottom: 2px solid #333; padding-bottom: 16px; }
+  #quoteSheet h1 { font-size: 1.8rem; }
+  #quoteSheet .qs-biz { font-size: 0.95rem; color: #444; }
+  #quoteSheet table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  #quoteSheet td, #quoteSheet th { border: 1px solid #ccc; padding: 10px 12px; text-align: left; }
+  #quoteSheet th { background: #f5f5f5; }
+  #quoteSheet .qs-total td { font-weight: 700; font-size: 1.1rem; background: #f0f0f0; }
+  #quoteSheet .qs-deposit td { background: #fafad2; font-weight: 600; }
+  #quoteSheet .qs-footer { margin-top: 24px; font-size: 0.85rem; color: #666; border-top: 1px solid #ccc; padding-top: 12px; }
+
+  details summary { cursor: pointer; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-icon" id="appBadge">QQ</div>
+    <h1 id="appTitle">QuickQuote</h1>
+  </div>
+  <small id="dateNow"></small>
+</header>
+
+<div class="wrap app-ui">
+
+  <!-- Service tabs -->
+  <div class="card">
+    <div class="card-label">Service Type</div>
+    <div class="tabs" id="svcTabs">
+      <button data-svc="sealing" class="on"><span>🖌️</span>Sealing &amp; Repair</button>
+      <button data-svc="lines"><span>🅿️</span>Line Painting</button>
+      <button data-svc="wash"><span>💧</span>Pressure Wash</button>
+    </div>
+
+    <!-- ── SEALING & REPAIR ── -->
+    <div id="sealFields">
+      <div class="row2">
+        <div><label>Length (ft)</label><input type="number" id="sLen" inputmode="decimal" placeholder="60" /></div>
+        <div><label>Width (ft)</label><input type="number" id="sWid" inputmode="decimal" placeholder="20" /></div>
+      </div>
+      <label style="margin-top:14px">Services included</label>
+      <div class="check-grid">
+        <label class="check-item checked" id="chk-sealcoat">
+          <input type="checkbox" checked onchange="toggleCheck(this);calc();" />
+          <div class="checkmark"></div>
+          <div class="check-label">Seal coat<br><small style="opacity:.6">Whole surface</small></div>
+        </label>
+        <label class="check-item" id="chk-crack">
+          <input type="checkbox" onchange="toggleCheck(this);calc();" />
+          <div class="checkmark"></div>
+          <div class="check-label">Crack sealing<br><small style="opacity:.6">Per lin ft</small></div>
+        </label>
+        <label class="check-item" id="chk-pothole">
+          <input type="checkbox" onchange="toggleCheck(this);calc();" />
+          <div class="checkmark"></div>
+          <div class="check-label">Pothole repair<br><small style="opacity:.6">Per hole</small></div>
+        </label>
+        <label class="check-item" id="chk-edge">
+          <input type="checkbox" onchange="toggleCheck(this);calc();" />
+          <div class="checkmark"></div>
+          <div class="check-label">Edge cleanup<br><small style="opacity:.6">Per lin ft</small></div>
+        </label>
+      </div>
+      <div id="sealExtras"></div>
+    </div>
+
+    <!-- ── LINE PAINTING ── -->
+    <div id="lineFields" style="display:none">
+      <div class="row2">
+        <div>
+          <label>Surface type</label>
+          <select id="lineType" onchange="calc()">
+            <option value="restripe">Re-stripe (existing layout)</option>
+            <option value="newlayout">New layout</option>
+          </select>
+        </div>
+        <div><label>Parking stalls</label><input type="number" id="lineStalls" inputmode="decimal" placeholder="20" oninput="calc()" /></div>
+      </div>
+      <label style="margin-top:14px">Additional items</label>
+      <div class="check-grid">
+        <label class="check-item" id="chk-firelane">
+          <input type="checkbox" onchange="toggleCheck(this);calc();" />
+          <div class="checkmark"></div>
+          <div class="check-label">Fire lane<br><small style="opacity:.6">Per lin ft</small></div>
+        </label>
+        <label class="check-item" id="chk-arrows">
+          <input type="checkbox" onchange="toggleCheck(this);calc();" />
+          <div class="checkmark"></div>
+          <div class="check-label">Directional arrows<br><small style="opacity:.6">Each</small></div>
+        </label>
+        <label class="check-item" id="chk-handicap">
+          <input type="checkbox" onchange="toggleCheck(this);calc();" />
+          <div class="checkmark"></div>
+          <div class="check-label">Handicap symbols<br><small style="opacity:.6">Each</small></div>
+        </label>
+        <label class="check-item" id="chk-stopbar">
+          <input type="checkbox" onchange="toggleCheck(this);calc();" />
+          <div class="checkmark"></div>
+          <div class="check-label">Stop bars<br><small style="opacity:.6">Each</small></div>
+        </label>
+      </div>
+      <div id="lineExtras"></div>
+    </div>
+
+    <!-- ── PRESSURE WASH ── -->
+    <div id="washFields" style="display:none">
+      <div class="row2">
+        <div>
+          <label>Surface type</label>
+          <select id="washType" onchange="calc()">
+            <option value="driveway">Driveway</option>
+            <option value="parking">Parking lot</option>
+            <option value="sidewalk">Sidewalk / walkway</option>
+            <option value="house">House exterior</option>
+          </select>
+        </div>
+        <div><label>Area (sq ft)</label><input type="number" id="washSqft" inputmode="decimal" placeholder="500" oninput="calc()" /></div>
+      </div>
+      <div class="row2">
+        <div>
+          <label>Condition</label>
+          <select id="washCondition" onchange="calc()">
+            <option value="1">Normal</option>
+            <option value="1.3">Heavy staining / oil</option>
+            <option value="1.5">Severely neglected</option>
+          </select>
+        </div>
+        <div><label>Prep for sealing?</label>
+          <select id="washPrep" onchange="calc()"><option value="0">No</option><option value="1">Yes (+20%)</option></select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer -->
+  <div class="card">
+    <div class="card-label">Customer</div>
+    <div class="row2">
+      <div><label>Name</label><input type="text" id="custName" placeholder="Jane Smith" /></div>
+      <div><label>Phone</label><input type="tel" id="custPhone" placeholder="(647) 555-1234" /></div>
+    </div>
+    <label>Job address</label><input type="text" id="custAddr" placeholder="123 Oak St, Oshawa, ON" />
+  </div>
+
+  <!-- Result -->
+  <div class="card result">
+    <div class="card-label">Quote Total</div>
+    <div class="total-row">
+      <div class="big" id="total">$0</div>
+      <div class="per-unit" id="perUnit"></div>
+    </div>
+    <div class="deposit-chip" id="depositChip" style="display:none"></div>
+    <div class="breakdown" id="breakdown"></div>
+    <button class="share-btn no-print" onclick="shareQuote()">📲 Text / Share This Quote</button>
+  </div>
+
+  <!-- History -->
+  <div class="card">
+    <div class="card-label">Recent Quotes</div>
+    <div id="history"><div class="empty-note">Quotes you generate will be saved here.</div></div>
+  </div>
+
+  <!-- Business info -->
+  <div class="card">
+    <details>
+      <summary class="card-label" style="margin-bottom:0">My Business Info (shows on quotes)</summary>
+      <div class="row2">
+        <div><label>Business name</label><input type="text" id="bizName" placeholder="Your business name" onchange="saveBiz()" /></div>
+        <div><label>Phone</label><input type="tel" id="bizPhone" placeholder="(647) 555-0000" onchange="saveBiz()" /></div>
+      </div>
+      <div class="row2">
+        <div><label>Email</label><input type="email" id="bizEmail" placeholder="you@example.com" onchange="saveBiz()" /></div>
+        <div><label>License # (optional)</label><input type="text" id="bizLicense" placeholder="LIC-12345" onchange="saveBiz()" /></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Price book -->
+  <div class="card">
+    <details>
+      <summary class="card-label" style="margin-bottom:0">My Price Book — saved on this device</summary>
+      <div id="priceBook" style="margin-top:10px"></div>
+      <div class="hint">Update these whenever your costs change — every quote recalculates instantly.</div>
+    </details>
+  </div>
+
+  <!-- Suppliers -->
+  <div class="card">
+    <div class="card-label">Find Supplies Near Me</div>
+    <a class="sup-link" href="#" onclick="findNear('driveway sealcoating supplies'); return false;">
+      <span class="sup-icon">🖌️</span><span class="sup-text">Sealer & crack-fill suppliers</span><span class="sup-arrow">↗</span>
+    </a>
+    <a class="sup-link" href="#" onclick="findNear('pavement marking paint supplier'); return false;">
+      <span class="sup-icon">🅿️</span><span class="sup-text">Line marking paint & supplies</span><span class="sup-arrow">↗</span>
+    </a>
+    <a class="sup-link" href="#" onclick="findNear('pressure washer rental'); return false;">
+      <span class="sup-icon">💧</span><span class="sup-text">Pressure washer rental</span><span class="sup-arrow">↗</span>
+    </a>
+    <a class="sup-link" href="#" onclick="findNear('asphalt repair cold patch'); return false;">
+      <span class="sup-icon">🛣️</span><span class="sup-text">Cold patch & asphalt repair</span><span class="sup-arrow">↗</span>
+    </a>
+    <div class="hint">Opens Google Maps at your current location.</div>
+  </div>
+
+</div>
+
+<div id="quoteSheet"></div>
+
+<div class="actions no-print">
+  <button class="btn-secondary" onclick="resetJob()">New Job</button>
+  <button class="btn-primary" onclick="makeQuote()">Generate Quote ↗</button>
+</div>
+
+<script>
+// ── Price book ──
+// Defaults benchmarked for GTA/Durham, Ontario (2025-26 market rates)
+const DEFAULT_PRICES = {
+  // Sealing — rates are ALL-IN cost (materials + labour); margin is added on top
+  sealcoat:   { label: "Seal coat — 2-coat std (per sq ft)",   price: 0.40 },
+  seal_min:   { label: "Sealing minimum charge ($)",           price: 150  },
+  crackfill:  { label: "Crack sealing (per lin ft)",           price: 3.00 },
+  pothole:    { label: "Pothole repair (each)",                price: 150  },
+  edgeclean:  { label: "Edge cleanup (per lin ft)",            price: 2.00 },
+  // Line painting
+  stall_new:  { label: "Parking stall — new layout (ea)",     price: 10   },
+  stall_re:   { label: "Parking stall — re-stripe (ea)",      price: 6    },
+  firelane:   { label: "Fire lane (per lin ft)",               price: 2.50 },
+  arrow:      { label: "Directional arrow (each)",             price: 35   },
+  handicap:   { label: "Handicap symbol (each)",               price: 100  },
+  stopbar:    { label: "Stop bar (each)",                      price: 40   },
+  // Pressure wash — rates are ALL-IN cost (materials + labour)
+  wash_drive: { label: "Pressure wash — driveway (per sq ft)", price: 0.20 },
+  wash_park:  { label: "Pressure wash — parking lot (per sq ft)", price: 0.10 },
+  wash_side:  { label: "Pressure wash — sidewalk (per sq ft)", price: 0.22 },
+  wash_house: { label: "Pressure wash — house (per sq ft)",   price: 0.25 },
+  wash_min:   { label: "Pressure wash minimum charge ($)",     price: 120  },
+  // General
+  labor:      { label: "Labor rate — line painting (per hr)", price: 75   },
+  margin:     { label: "Profit margin (%)",                   price: 25   },
+  deposit:    { label: "Deposit required (%)",                price: 30   },
+};
+// Typed text (names, addresses, business details) goes into the page as text, never as markup.
+function esc(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+let prices = JSON.parse(localStorage.getItem("qq_prices6") || "null") || structuredClone(DEFAULT_PRICES);
+for (const k in DEFAULT_PRICES) if (!prices[k]) prices[k] = structuredClone(DEFAULT_PRICES[k]);
+
+function renderPriceBook() {
+  const el = document.getElementById("priceBook"); el.innerHTML = "";
+  for (const key in prices) {
+    const row = document.createElement("div"); row.className = "pb-row";
+    row.innerHTML = `<span class="pb-label">${prices[key].label}</span>
+      <input class="pb-input" type="number" inputmode="decimal" value="${prices[key].price}"
+        onchange="prices['${key}'].price=parseFloat(this.value)||0;savePrices();calc();" />`;
+    el.appendChild(row);
+  }
+}
+function savePrices() { localStorage.setItem("qq_prices6", JSON.stringify(prices)); }
+
+// ── Business info ──
+const BIZ_FIELDS = ["bizName","bizPhone","bizEmail","bizLicense"];
+function saveBiz() {
+  const biz = {};
+  BIZ_FIELDS.forEach(f => biz[f] = document.getElementById(f).value);
+  localStorage.setItem("qq_biz", JSON.stringify(biz));
+  showBiz(biz);
+}
+function showBiz(biz) {
+  if (!biz.bizName) return;
+  document.getElementById("appTitle").textContent = biz.bizName;
+  const initials = biz.bizName.split(" ").map(w => w[0]).filter(c => c && /[a-z0-9]/i.test(c)).join("").slice(0, 3).toUpperCase();
+  if (initials) document.getElementById("appBadge").textContent = initials;
+}
+function loadBiz() {
+  const biz = JSON.parse(localStorage.getItem("qq_biz") || "{}");
+  BIZ_FIELDS.forEach(f => { if (biz[f]) document.getElementById(f).value = biz[f]; });
+  showBiz(biz);
+  return biz;
+}
+
+// ── Service tabs ──
+let service = "sealing";
+const SERVICE_FIELDS = { sealing: "sealFields", lines: "lineFields", wash: "washFields" };
+document.querySelectorAll("#svcTabs button").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll("#svcTabs button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    service = b.dataset.svc;
+    Object.values(SERVICE_FIELDS).forEach(id => document.getElementById(id).style.display = "none");
+    document.getElementById(SERVICE_FIELDS[service]).style.display = "block";
+    renderDynamicExtras();
+    calc();
+  };
+});
+
+// ── Checkbox toggle ──
+function toggleCheck(input) {
+  input.closest(".check-item").classList.toggle("checked", input.checked);
+  renderDynamicExtras();
+}
+
+function renderDynamicExtras() {
+  if (service === "sealing") renderSealExtras();
+  if (service === "lines")   renderLineExtras();
+}
+
+function renderSealExtras() {
+  const crack   = document.querySelector("#chk-crack input")?.checked;
+  const pothole = document.querySelector("#chk-pothole input")?.checked;
+  const edge    = document.querySelector("#chk-edge input")?.checked;
+  const keep = {};
+  ["crackFt","potholes","edgeFt"].forEach(id => { const el=document.getElementById(id); if(el) keep[id]=el.value; });
+  let html = "";
+  if (crack)   html += `<div class="row2"><div><label>Crack length (lin ft)</label><input type="number" id="crackFt" inputmode="decimal" placeholder="40" oninput="calc()"/></div><div></div></div>`;
+  if (pothole) html += `<div class="row2"><div><label>Number of potholes</label><input type="number" id="potholes" inputmode="decimal" placeholder="2" oninput="calc()"/></div><div></div></div>`;
+  if (edge)    html += `<div class="row2"><div><label>Edge length (lin ft)</label><input type="number" id="edgeFt" inputmode="decimal" placeholder="120" oninput="calc()"/></div><div></div></div>`;
+  document.getElementById("sealExtras").innerHTML = html;
+  for (const id in keep) { const el=document.getElementById(id); if(el) el.value=keep[id]; }
+}
+
+function renderLineExtras() {
+  const firelane = document.querySelector("#chk-firelane input")?.checked;
+  const arrows   = document.querySelector("#chk-arrows input")?.checked;
+  const handicap = document.querySelector("#chk-handicap input")?.checked;
+  const stopbar  = document.querySelector("#chk-stopbar input")?.checked;
+  const keep = {};
+  ["firelaneFt","arrowCount","handicapCount","stopbarCount"].forEach(id => { const el=document.getElementById(id); if(el) keep[id]=el.value; });
+  let html = "";
+  if (firelane) html += `<div class="row2"><div><label>Fire lane length (lin ft)</label><input type="number" id="firelaneFt" inputmode="decimal" placeholder="80" oninput="calc()"/></div><div></div></div>`;
+  if (arrows)   html += `<div class="row2"><div><label>Number of arrows</label><input type="number" id="arrowCount" inputmode="decimal" placeholder="4" oninput="calc()"/></div><div></div></div>`;
+  if (handicap) html += `<div class="row2"><div><label>Handicap symbols</label><input type="number" id="handicapCount" inputmode="decimal" placeholder="2" oninput="calc()"/></div><div></div></div>`;
+  if (stopbar)  html += `<div class="row2"><div><label>Number of stop bars</label><input type="number" id="stopbarCount" inputmode="decimal" placeholder="2" oninput="calc()"/></div><div></div></div>`;
+  document.getElementById("lineExtras").innerHTML = html;
+  for (const id in keep) { const el=document.getElementById(id); if(el) el.value=keep[id]; }
+}
+
+// ── Core calculation ──
+const JOB_LABELS = {
+  sealing: "Driveway sealing & repair",
+  lines:   "Parking lot line painting",
+  wash:    "Pressure washing",
+};
+
+function calc() {
+  const lines = []; let sqft = 0; let unitLabel = "";
+
+  if (service === "sealing") {
+    const L = parseFloat(document.getElementById("sLen").value)||0;
+    const W = parseFloat(document.getElementById("sWid").value)||0;
+    sqft = L * W;
+    if (sqft > 0 && document.querySelector("#chk-sealcoat input")?.checked) {
+      const raw = sqft * prices.sealcoat.price;
+      const amt = Math.max(prices.seal_min.price, raw);
+      lines.push(["Seal coat: " + sqft.toFixed(0) + " sq ft" + (amt > raw ? " (min charge)" : ""), amt]);
+    }
+    if (document.querySelector("#chk-crack input")?.checked) {
+      const ft = parseFloat(document.getElementById("crackFt")?.value)||0;
+      if (ft) lines.push(["Crack sealing: " + ft + " lin ft", ft * prices.crackfill.price]);
+    }
+    if (document.querySelector("#chk-pothole input")?.checked) {
+      const n = parseFloat(document.getElementById("potholes")?.value)||0;
+      if (n) lines.push(["Pothole repair: " + n + " hole" + (n!==1?"s":""), n * prices.pothole.price]);
+    }
+    if (document.querySelector("#chk-edge input")?.checked) {
+      const ft = parseFloat(document.getElementById("edgeFt")?.value)||0;
+      if (ft) lines.push(["Edge cleanup: " + ft + " lin ft", ft * prices.edgeclean.price]);
+    }
+    if (sqft > 0) unitLabel = "/ sq ft";
+
+  } else if (service === "lines") {
+    const stalls = parseFloat(document.getElementById("lineStalls").value)||0;
+    const isNew  = document.getElementById("lineType").value === "newlayout";
+    if (stalls > 0) {
+      const rate = isNew ? prices.stall_new.price : prices.stall_re.price;
+      lines.push([(isNew?"New layout":"Re-stripe") + ": " + stalls + " stalls", stalls * rate]);
+    }
+    if (document.querySelector("#chk-firelane input")?.checked) {
+      const ft = parseFloat(document.getElementById("firelaneFt")?.value)||0;
+      if (ft) lines.push(["Fire lane: " + ft + " lin ft", ft * prices.firelane.price]);
+    }
+    if (document.querySelector("#chk-arrows input")?.checked) {
+      const n = parseFloat(document.getElementById("arrowCount")?.value)||0;
+      if (n) lines.push(["Directional arrows: " + n, n * prices.arrow.price]);
+    }
+    if (document.querySelector("#chk-handicap input")?.checked) {
+      const n = parseFloat(document.getElementById("handicapCount")?.value)||0;
+      if (n) lines.push(["Handicap symbols: " + n, n * prices.handicap.price]);
+    }
+    if (document.querySelector("#chk-stopbar input")?.checked) {
+      const n = parseFloat(document.getElementById("stopbarCount")?.value)||0;
+      if (n) lines.push(["Stop bars: " + n, n * prices.stopbar.price]);
+    }
+    if (lines.length > 0) {
+      const totalItems = lines.reduce((s,l) => s + (l[0].match(/\d+/)?.[0]||1)*1, 0);
+      const hrs = Math.max(1, stalls * 0.05 + totalItems * 0.02);
+      lines.push(["Labor: " + hrs.toFixed(1) + " hrs", hrs * prices.labor.price]);
+    }
+    if (stalls > 0) unitLabel = "/ stall";
+
+  } else if (service === "wash") {
+    sqft = parseFloat(document.getElementById("washSqft").value)||0;
+    const type = document.getElementById("washType").value;
+    const cond = parseFloat(document.getElementById("washCondition").value)||1;
+    const prep = parseFloat(document.getElementById("washPrep").value)||0;
+    const rateKey = { driveway:"wash_drive", parking:"wash_park", sidewalk:"wash_side", house:"wash_house" }[type];
+    const typeLabel = { driveway:"Driveway", parking:"Parking lot", sidewalk:"Sidewalk", house:"House exterior" }[type];
+    if (sqft > 0) {
+      let rate = prices[rateKey].price * cond * (1 + prep * 0.2);
+      const raw = sqft * rate;
+      const amt = Math.max(prices.wash_min.price, raw);
+      lines.push([typeLabel + ": " + sqft.toFixed(0) + " sq ft" + (amt > raw ? " (min charge)" : ""), amt]);
+    }
+    if (sqft > 0) unitLabel = "/ sq ft";
+  }
+
+  const subtotal = lines.reduce((s,l) => s+l[1], 0);
+  const total    = subtotal * (1 + prices.margin.price / 100);
+  const deposit  = total * prices.deposit.price / 100;
+
+  document.getElementById("total").textContent = total > 0
+    ? "$" + total.toLocaleString(undefined,{maximumFractionDigits:0}) : "$0";
+  document.getElementById("perUnit").textContent = (total>0 && sqft>0 && unitLabel)
+    ? "$" + (total/sqft).toFixed(2) + " " + unitLabel : "";
+
+  const chip = document.getElementById("depositChip");
+  if (total > 0 && prices.deposit.price > 0) {
+    chip.style.display = "inline-block";
+    chip.textContent = "Deposit to schedule: $" + deposit.toLocaleString(undefined,{maximumFractionDigits:0}) + " (" + prices.deposit.price + "%)";
+  } else chip.style.display = "none";
+
+  const bd = document.getElementById("breakdown");
+  if (!lines.length) { bd.innerHTML = ""; window._quoteData = null; return; }
+  bd.innerHTML = lines.map(l =>
+    `<div class="breakdown-row"><span>${l[0]}</span><span>$${l[1].toLocaleString(undefined,{maximumFractionDigits:0})}</span></div>`
+  ).join("") +
+  `<div class="breakdown-row"><span>Subtotal</span><span>$${subtotal.toLocaleString(undefined,{maximumFractionDigits:0})}</span></div>
+   <div class="breakdown-row total-line"><span>Total w/ ${prices.margin.price}% margin</span><span>$${total.toLocaleString(undefined,{maximumFractionDigits:0})}</span></div>`;
+
+  window._quoteData = { lines, subtotal, total, deposit, sqft, service };
+}
+
+// watch all static inputs
+["sLen","sWid","lineStalls","lineType","washSqft","washType","washCondition","washPrep"].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener("input", calc);
+});
+
+function findNear(q) { window.open("https://www.google.com/maps/search/"+encodeURIComponent(q),"_blank"); }
+
+// ── Quote history ──
+function getHistory() { return JSON.parse(localStorage.getItem("qq_history")||"[]"); }
+function saveHistory(h) { localStorage.setItem("qq_history", JSON.stringify(h.slice(0,25))); }
+function renderHistory() {
+  const h = getHistory(); const el = document.getElementById("history");
+  if (!h.length) { el.innerHTML='<div class="empty-note">Quotes you generate will be saved here.</div>'; return; }
+  el.innerHTML = h.map((q,i) => `
+    <div class="hist-row">
+      <div class="hist-main">
+        <div class="hist-name">#${q.n} · ${esc(q.name)}</div>
+        <div class="hist-meta">${q.date} · ${JOB_LABELS[q.service]||q.service}</div>
+      </div>
+      <div class="hist-total">$${q.total.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+      <button class="hist-btn" onclick="reprintQuote(${i})">View</button>
+      <button class="hist-btn hist-del" onclick="deleteQuote(${i})">✕</button>
+    </div>`).join("");
+}
+function deleteQuote(i) { const h=getHistory(); h.splice(i,1); saveHistory(h); renderHistory(); }
+function reprintQuote(i) { const q=getHistory()[i]; if(q){buildQuoteSheet(q);window.print();} }
+
+// ── Quote sheet ──
+function buildQuoteSheet(q) {
+  const biz = loadBiz();
+  const bizBlock = biz.bizName
+    ? `<div class="qs-biz"><b>${esc(biz.bizName)}</b><br>${[biz.bizPhone,biz.bizEmail].filter(Boolean).map(esc).join(" · ")}${biz.bizLicense?"<br>License: "+esc(biz.bizLicense):""}</div>`
+    : "";
+  document.getElementById("quoteSheet").innerHTML = `
+    <div class="qs-header">
+      <div><h1>Estimate #${q.n}</h1>${bizBlock}</div>
+      <div style="text-align:right"><p><b>Date:</b> ${q.date}</p><p><b>Valid for:</b> 30 days</p></div>
+    </div>
+    <p><b>Customer:</b> ${esc(q.name)}${q.phone?" · "+esc(q.phone):""}</p>
+    <p><b>Job address:</b> ${esc(q.addr)}</p>
+    <p><b>Scope:</b> ${JOB_LABELS[q.service]||q.service}${q.sqft>0?" — "+Math.round(q.sqft)+" sq ft":""}</p>
+    <table>
+      <tr><th>Item</th><th style="text-align:right">Amount</th></tr>
+      ${q.lines.map(l=>`<tr><td>${l[0]}</td><td style="text-align:right">$${l[1].toLocaleString(undefined,{maximumFractionDigits:0})}</td></tr>`).join("")}
+      <tr class="qs-total"><td>TOTAL</td><td style="text-align:right">$${q.total.toLocaleString(undefined,{maximumFractionDigits:0})}</td></tr>
+      ${q.deposit>0?`<tr class="qs-deposit"><td>Deposit due to schedule</td><td style="text-align:right">$${q.deposit.toLocaleString(undefined,{maximumFractionDigits:0})}</td></tr>`:""}
+    </table>
+    <div class="qs-footer">This estimate is valid for 30 days. Final price may adjust based on site conditions.${q.deposit>0?" Deposit of $"+q.deposit.toLocaleString(undefined,{maximumFractionDigits:0})+" required to schedule.":""} Thank you for your business.</div>`;
+}
+
+function makeQuote() {
+  calc();
+  const d = window._quoteData;
+  if (!d || !d.total) { alert("Fill in the job details first."); return; }
+  let n = parseInt(localStorage.getItem("qq_quoteNum")||"100",10)+1;
+  localStorage.setItem("qq_quoteNum",n);
+  const q = {
+    n, date: new Date().toLocaleDateString(),
+    name: document.getElementById("custName").value||"—",
+    phone: document.getElementById("custPhone").value||"",
+    addr: document.getElementById("custAddr").value||"—",
+    service: d.service, sqft: d.sqft, lines: d.lines,
+    total: d.total, deposit: d.deposit,
+  };
+  const h = getHistory(); h.unshift(q); saveHistory(h); renderHistory();
+  buildQuoteSheet(q); window.print();
+}
+
+// ── Share ──
+function shareQuote() {
+  calc();
+  const d = window._quoteData;
+  if (!d || !d.total) { alert("Fill in the job details first."); return; }
+  const biz = loadBiz();
+  const text = `${biz.bizName||"Estimate"} — ${JOB_LABELS[d.service]}
+${document.getElementById("custName").value ? "For: "+document.getElementById("custName").value+"\n":""}${d.sqft>0?"Area: "+Math.round(d.sqft)+" sq ft\n":""}
+${d.lines.map(l=>l[0]+" — $"+l[1].toLocaleString(undefined,{maximumFractionDigits:0})).join("\n")}
+
+TOTAL: $${d.total.toLocaleString(undefined,{maximumFractionDigits:0})}
+${d.deposit>0?"Deposit to schedule: $"+d.deposit.toLocaleString(undefined,{maximumFractionDigits:0})+"\n":""}Valid 30 days.${biz.bizPhone?" Call/text "+biz.bizPhone:""}`;
+  if (navigator.share) navigator.share({title:"Estimate",text}).catch(()=>{});
+  else navigator.clipboard.writeText(text).then(()=>alert("Quote copied — paste into a text or email."));
+}
+
+// ── Reset ──
+function resetJob() {
+  ["sLen","sWid","lineStalls","washSqft","custName","custPhone","custAddr"].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value="";
+  });
+  document.querySelectorAll(".check-item").forEach((item,i)=>{
+    const inp = item.querySelector("input");
+    const defaultOn = item.id==="chk-sealcoat";
+    inp.checked = defaultOn;
+    item.classList.toggle("checked", defaultOn);
+  });
+  renderDynamicExtras();
+  calc();
+}
+
+// ── Init ──
+document.getElementById("dateNow").textContent = new Date().toLocaleDateString();
+(function clearOldSeed() {
+  const b = JSON.parse(localStorage.getItem("qq_biz") || "null");
+  if (b && b.bizName === "Seals Go Pro" && !b.bizPhone && !b.bizEmail && !b.bizLicense) localStorage.removeItem("qq_biz");
+})();
+loadBiz();
+renderPriceBook();
+renderSealExtras();
+renderHistory();
+calc();
+</script>
+</body>
+</html>

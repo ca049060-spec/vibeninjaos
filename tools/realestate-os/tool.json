@@ -1,0 +1,19 @@
+{
+  "name": "Real Estate OS",
+  "tagline": "Every buyer, listing and condition date, filed the same way.",
+  "slug": "realestate-os",
+  "order": 12,
+  "status": "workbench",
+  "category": "Real estate",
+  "audience": "Real estate agents, teams and small brokerages",
+  "before": "Agents juggle buyers, listings and condition deadlines at once, with every deal filed a different way. Inspection and financing dates slip.",
+  "after": "One standard file for each buyer, seller and property: showings, inspection and financing deadlines, comparable sales and closing paperwork.",
+  "try_url": "/contact.html",
+  "try_label": "Tell me when it's ready",
+  "price_note": "Price set at launch.",
+  "privacy_note": "",
+  "origin": "",
+  "built_with": "",
+  "repo": "",
+  "updated": "2026-11-10"
+}
