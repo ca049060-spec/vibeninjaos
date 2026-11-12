@@ -748,6 +748,25 @@ main a:not(.btn) {
   border-radius: 2px;
 }
 
+/* Home, phone: every tool card ends in the same full-width Open row, so the second card no longer has a small stray box (landing loop round 9, 2026-11-11) */
+@media (max-width: 600px) {
+  .home .tool-card .btn {
+    align-self: stretch;
+    text-align: center;
+    font-size: 1.05rem;
+  }
+
+  .home .tool-card .btn::after {
+    content: "\2192" / "";
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+
+  .home .tool-card:not(:has(.status-live)) .btn {
+    border-color: #3b4a63;
+  }
+}
+
 .home .construction-banner strong::before {
   content: "";
   display: inline-block;

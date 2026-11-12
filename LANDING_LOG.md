@@ -1,7 +1,7 @@
 # Landing page change log
 
 Every adjustment round on the home page, kept or not. Written by the round keeper, not by hand.
-Rounds run: 8. Kept: 8. Not kept: 0.
+Rounds run: 9. Kept: 9. Not kept: 0.
 
 | Round | Result | What was tried | Blind vote | Commit |
 |---|---|---|---|---|
@@ -12,4 +12,5 @@ Rounds run: 8. Kept: 8. Not kept: 0.
 | 5 | kept | The workbench is now a calm list of tappable rows with white names and arrows, not green underlined links. | 3 of 3 preferred the change | 5a6dade |
 | 6 | kept | The loud amber Early preview bar at the top is now a quiet dark note with a small amber dot. | 3 of 3 preferred the change | 5684fe0 |
 | 7 | kept | On a phone the live QuickQuote Open button now spans the whole card with an arrow, an obvious first tap. | 3 of 3 preferred the change | 26f09db |
-| 8 | kept | The shouty capitals line above the headline is now one calm green pill with a small Canadian flag. | 3 of 3 preferred the change |  |
+| 8 | kept | The shouty capitals line above the headline is now one calm green pill with a small Canadian flag. | 3 of 3 preferred the change | 182180e |
+| 9 | kept | On a phone the Local Market Report Open button now spans its card with an arrow, matching QuickQuote. | 3 of 3 preferred the change |  |
