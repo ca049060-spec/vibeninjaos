@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0e1929">
+<title>Expense &amp; Mileage Log</title>
+<meta name="description" content="Log small-business expenses and kilometres in the browser, then download a CSV. Data stays on this device.">
+<style>
+  :root {
+    --gold: #f5a623;
+    --gold-dark: #d4891a;
+    --navy: #1a2d4a;
+    --navy-deep: #0e1929;
+    --bg: #f0f2f6;
+    --card: #ffffff;
+    --ink: #111827;
+    --muted: #475569;
+    --line: #dde3ed;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.45;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+    color: #fff; padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .mark {
+    width: 36px; height: 36px; border-radius: 9px; background: var(--gold); color: var(--navy-deep);
+    font-weight: 800; font-size: 0.68rem; display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  header h1 { font-size: 1.02rem; margin: 0; }
+  header p { margin: 0; color: rgba(255,255,255,0.7); font-size: 0.8rem; }
+  header a { color: #fff; font-weight: 700; text-decoration: none; font-size: 0.85rem; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 16px 16px 32px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow);
+  }
+  h2 { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+  .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .choice button, .filters button, .primary, .secondary, .tiny {
+    font: inherit; cursor: pointer; border-radius: 12px; font-weight: 800; min-height: 48px;
+  }
+  .choice button, .filters button, .secondary {
+    background: #f8fafc; border: 1.5px solid var(--line); color: var(--ink);
+  }
+  .choice button[aria-pressed="true"], .filters button[aria-pressed="true"] {
+    background: var(--navy); color: #fff; border-color: var(--navy);
+  }
+  label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--muted); margin: 10px 0 6px; }
+  input, select, textarea { font: inherit; color: var(--ink); width: 100%; min-height: 48px; padding: 12px 14px; font-size: 1rem; border: 1.5px solid var(--line); border-radius: 12px; background: #f8fafc; }
+  textarea { min-height: 72px; resize: vertical; }
+  input:focus, select:focus, textarea:focus, button:focus-visible { outline: 3px solid rgba(245,166,35,0.55); }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .primary { border: 0; color: var(--navy-deep); background: linear-gradient(135deg, var(--gold), var(--gold-dark)); width: 100%; margin-top: 12px; }
+  .secondary { padding: 0 12px; }
+  .hint { color: var(--muted); font-size: 0.88rem; }
+  .hint a { color: var(--navy); }
+  .err { color: #9f1239; font-weight: 700; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filters button { flex: 1; min-width: 0; padding: 0 8px; }
+  .sums { display: grid; gap: 8px; }
+  .sums div { background: #f8fafc; border-radius: 12px; padding: 10px 12px; }
+  .sums span { display: block; color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .sums strong { font-size: 1.25rem; }
+  ul.entries { list-style: none; margin: 0; padding: 0; }
+  li.entry { padding: 12px 0; border-bottom: 1px solid var(--line); }
+  li.entry:last-child { border-bottom: 0; }
+  .entry-top { display: flex; justify-content: space-between; gap: 8px; }
+  .entry-top strong { overflow-wrap: anywhere; }
+  .amt { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .meta { color: var(--muted); font-size: 0.85rem; margin: 4px 0; }
+  .entry-actions { display: flex; gap: 8px; }
+  .tiny { min-height: 40px; padding: 0 12px; background: #fff; }
+  .tiny.warn { color: #9f1239; }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tools button, .tools a { flex: 1; min-width: 140px; text-align: center; text-decoration: none; }
+  @media (max-width: 380px) {
+    .row2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="mark" aria-hidden="true">LOG</div>
+    <div>
+      <h1>Expense &amp; Mileage Log</h1>
+      <p>On this device only</p>
+    </div>
+  </div>
+  <a href="/tools/expense-log/">About</a>
+</header>
+<div class="wrap">
+  <form class="card" id="editor" autocomplete="off">
+    <h2 id="form-title">Add an entry</h2>
+    <div class="choice" role="group" aria-label="Kind of entry">
+      <button type="button" id="kind-expense" aria-pressed="true">Expense</button>
+      <button type="button" id="kind-trip" aria-pressed="false">Trip</button>
+    </div>
+    <label for="date">Date</label>
+    <input id="date" type="date" required>
+    <div id="expense-fields">
+      <label for="category">Category</label>
+      <select id="category">
+        <option>Supplies</option>
+        <option>Meals</option>
+        <option>Travel</option>
+        <option>Office</option>
+        <option>Vehicle</option>
+        <option>Subcontractor</option>
+        <option>Fees</option>
+        <option>Other</option>
+      </select>
+      <label for="payee">Who you paid</label>
+      <input id="payee">
+      <label for="amount">Amount (CAD)</label>
+      <input id="amount" inputmode="decimal" placeholder="0.00">
+    </div>
+    <div id="trip-fields" hidden>
+      <div class="row2">
+        <div>
+          <label for="from">From</label>
+          <input id="from">
+        </div>
+        <div>
+          <label for="to">To</label>
+          <input id="to">
+        </div>
+      </div>
+      <label for="km">Kilometres</label>
+      <input id="km" inputmode="decimal" placeholder="0.0">
+      <label for="rate">Dollars per kilometre (optional)</label>
+      <input id="rate" inputmode="decimal" placeholder="Leave blank to record distance only">
+    </div>
+    <label for="description">What it was for</label>
+    <input id="description">
+    <label for="note">Note (optional)</label>
+    <textarea id="note"></textarea>
+    <p class="err" id="form-error" hidden></p>
+    <button class="primary" type="submit" id="save">Add to the log</button>
+    <button class="secondary" type="button" id="cancel" hidden style="width:100%;margin-top:8px">Cancel edit</button>
+    <p class="hint">An expense records money, such as fuel or a receipt. A trip records kilometres. This log stores what you type. It does not decide what you can deduct, and it does not choose a mileage rate. The Canada Revenue Agency publishes allowance rates on its <a href="https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/payroll/benefits-allowances/automobile/automobile-motor-vehicle-allowances/automobile-allowance-rates.html" rel="noopener noreferrer">automobile allowance rates</a> page.</p>
+  </form>
+
+  <section class="card">
+    <h2>Log</h2>
+    <div class="filters" role="group" aria-label="Which entries to show">
+      <button type="button" data-filter="month" aria-pressed="true">This month</button>
+      <button type="button" data-filter="year" aria-pressed="false">This year</button>
+      <button type="button" data-filter="all" aria-pressed="false">All</button>
+    </div>
+    <div class="sums" id="sums" style="margin-top:12px"></div>
+    <ul class="entries" id="list"></ul>
+    <p class="hint" id="empty">No entries for this period.</p>
+    <div class="tools">
+      <button type="button" class="secondary" id="export">Download CSV of this list</button>
+      <button type="button" class="secondary tiny warn" id="clear">Clear all</button>
+    </div>
+    <p class="hint" id="store-note">Entries stay in this browser. Download a CSV if you want a copy your bookkeeper can open.</p>
+  </section>
+</div>
+<noscript><p>This log needs JavaScript. Entries are stored in this browser and are not sent to a server.</p></noscript>
+<script>
+const KEY = "vibeninjaos.expense-log.v1";
+const CATEGORIES = ["Supplies","Meals","Travel","Office","Vehicle","Subcontractor","Fees","Other"];
+const $ = (id) => document.getElementById(id);
+let entries = [];
+let filter = "month";
+let editing = null;
+let kind = "expense";
+
+function todayISO() {
+  const now = new Date();
+  return now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+}
+function money(cents) {
+  const sign = cents < 0 ? "-" : "";
+  const abs = Math.abs(cents);
+  return sign + "$" + Math.floor(abs / 100).toLocaleString("en-CA") + "." + String(abs % 100).padStart(2, "0");
+}
+function centsToPlain(cents) {
+  return (cents / 100).toFixed(2);
+}
+function parseMoney(raw) {
+  let text = String(raw).trim().replace(/\s/g, "").replace(/^\$/, "");
+  if (!text) return null;
+  if (text.includes(",") && text.includes(".")) {
+    text = text.lastIndexOf(",") > text.lastIndexOf(".") ? text.replace(/\./g, "").replace(",", ".") : text.replace(/,/g, "");
+  } else if (text.includes(",")) {
+    const bits = text.split(",");
+    text = bits.length === 2 && bits[1].length <= 2 ? bits[0] + "." + bits[1] : text.replace(/,/g, "");
+  }
+  if (!/^\d+(\.\d{1,2})?$/.test(text)) return undefined;
+  const [whole, frac = ""] = text.split(".");
+  if (whole.length > 8) return undefined;
+  return Number(whole) * 100 + Number((frac + "00").slice(0, 2));
+}
+function parseKm(raw) {
+  const text = String(raw).trim().replace(",", ".");
+  if (!text) return null;
+  if (!/^\d+(\.\d)?$/.test(text)) return undefined;
+  const [whole, frac = "0"] = text.split(".");
+  if (whole.length > 5) return undefined;
+  const tenths = Number(whole) * 10 + Number(frac);
+  if (tenths <= 0) return undefined;
+  return tenths;
+}
+function prettyDate(iso) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+  if (!match) return iso || "";
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return Number(match[3]) + " " + months[Number(match[2]) - 1] + " " + match[1];
+}
+function kmText(tenths) {
+  const whole = Math.floor(tenths / 10);
+  const frac = tenths % 10;
+  return frac ? whole + "." + frac : String(whole);
+}
+function mileageCents(tenths, rateCents) {
+  return Math.floor((tenths * rateCents + 5) / 10);
+}
+function uid() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+function showError(message) {
+  const el = $("form-error");
+  el.hidden = !message;
+  el.textContent = message || "";
+}
+function setKind(next) {
+  kind = next;
+  $("kind-expense").setAttribute("aria-pressed", String(next === "expense"));
+  $("kind-trip").setAttribute("aria-pressed", String(next === "trip"));
+  $("expense-fields").hidden = next !== "expense";
+  $("trip-fields").hidden = next !== "trip";
+}
+function visibleEntries() {
+  const today = todayISO();
+  return entries.filter((entry) => {
+    if (filter === "all") return true;
+    if (!entry.date) return false;
+    if (filter === "year") return entry.date.slice(0, 4) === today.slice(0, 4);
+    return entry.date.slice(0, 7) === today.slice(0, 7);
+  });
+}
+function saveStore() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify({ entries }));
+    $("store-note").textContent = "Entries stay in this browser. Download a CSV if you want a copy your bookkeeper can open.";
+  } catch (err) {
+    $("store-note").textContent = "This browser did not store the log. Download a CSV before you leave the page.";
+  }
+}
+function render() {
+  const shown = visibleEntries().slice().sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.created || "").localeCompare(a.created || ""));
+  let expenseCents = 0;
+  let tenths = 0;
+  let ratedCents = 0;
+  const list = $("list");
+  list.replaceChildren();
+  shown.forEach((entry) => {
+    if (entry.kind === "expense") expenseCents += entry.amount || 0;
+    if (entry.kind === "trip") {
+      tenths += entry.km || 0;
+      if (entry.rate != null) ratedCents += mileageCents(entry.km, entry.rate);
+    }
+    const item = document.createElement("li");
+    item.className = "entry";
+    const top = document.createElement("div");
+    top.className = "entry-top";
+    const title = document.createElement("strong");
+    title.textContent = entry.kind === "trip"
+      ? (entry.description || [entry.from, entry.to].filter(Boolean).join(" to ") || "Trip")
+      : (entry.payee || entry.description || "Expense");
+    const amount = document.createElement("span");
+    amount.className = "amt";
+    amount.textContent = entry.kind === "expense"
+      ? money(entry.amount || 0)
+      : (entry.rate == null ? kmText(entry.km) + " km" : money(mileageCents(entry.km, entry.rate)));
+    top.append(title, amount);
+    const meta = document.createElement("p");
+    meta.className = "meta";
+    if (entry.kind === "trip") {
+      const route = [entry.from, entry.to].filter(Boolean).join(" to ");
+      meta.textContent = [prettyDate(entry.date), "Trip", kmText(entry.km) + " km", route, entry.rate == null ? "no rate" : money(entry.rate) + "/km"].filter(Boolean).join(" · ");
+    } else {
+      meta.textContent = [prettyDate(entry.date), entry.category || "Expense", entry.description && entry.payee ? entry.description : ""].filter(Boolean).join(" · ");
+    }
+    const note = document.createElement("p");
+    note.className = "meta";
+    note.textContent = entry.note || "";
+    if (!entry.note) note.hidden = true;
+    const actions = document.createElement("div");
+    actions.className = "entry-actions";
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "tiny secondary";
+    edit.textContent = "Edit";
+    edit.addEventListener("click", () => startEdit(entry.id));
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "tiny secondary warn";
+    del.textContent = "Delete";
+    del.addEventListener("click", () => removeEntry(entry.id));
+    actions.append(edit, del);
+    item.append(top, meta, note, actions);
+    list.appendChild(item);
+  });
+  $("empty").hidden = shown.length > 0;
+  const sums = $("sums");
+  sums.replaceChildren();
+  [["Expenses", money(expenseCents)], ["Kilometres", kmText(tenths) + " km"], ["Mileage at your rates", money(ratedCents)]].forEach(([label, value]) => {
+    const box = document.createElement("div");
+    const span = document.createElement("span");
+    span.textContent = label;
+    const strong = document.createElement("strong");
+    strong.textContent = value;
+    box.append(span, strong);
+    sums.appendChild(box);
+  });
+}
+function resetForm() {
+  editing = null;
+  $("form-title").textContent = "Add an entry";
+  $("save").textContent = "Add to the log";
+  $("cancel").hidden = true;
+  $("payee").value = "";
+  $("amount").value = "";
+  $("from").value = "";
+  $("to").value = "";
+  $("km").value = "";
+  $("rate").value = "";
+  $("description").value = "";
+  $("note").value = "";
+  $("date").value = todayISO();
+  $("category").value = "Supplies";
+  setKind("expense");
+  showError("");
+}
+function startEdit(id) {
+  const entry = entries.find((item) => item.id === id);
+  if (!entry) return;
+  editing = id;
+  setKind(entry.kind);
+  $("date").value = entry.date || todayISO();
+  $("description").value = entry.description || "";
+  $("note").value = entry.note || "";
+  if (entry.kind === "expense") {
+    $("category").value = CATEGORIES.includes(entry.category) ? entry.category : "Other";
+    $("payee").value = entry.payee || "";
+    $("amount").value = centsToPlain(entry.amount || 0);
+  } else {
+    $("from").value = entry.from || "";
+    $("to").value = entry.to || "";
+    $("km").value = kmText(entry.km || 0);
+    $("rate").value = entry.rate == null ? "" : centsToPlain(entry.rate);
+  }
+  $("form-title").textContent = "Edit entry";
+  $("save").textContent = "Save changes";
+  $("cancel").hidden = false;
+  showError("");
+  $("editor").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function removeEntry(id) {
+  const entry = entries.find((item) => item.id === id);
+  if (!entry) return;
+  if (!confirm("Delete this entry?")) return;
+  entries = entries.filter((item) => item.id !== id);
+  if (editing === id) resetForm();
+  saveStore();
+  render();
+}
+function csvCell(value) {
+  const text = value == null ? "" : String(value);
+  return /[",\n\r]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+}
+function downloadCsv() {
+  const shown = visibleEntries().slice().sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+  const header = ["date","kind","category","payee","description","from","to","amount_cad","kilometres","rate_per_km_cad","mileage_amount_cad","note"];
+  const rows = shown.map((entry) => {
+    const trip = entry.kind === "trip";
+    const mileage = trip && entry.rate != null ? centsToPlain(mileageCents(entry.km, entry.rate)) : "";
+    return [
+      entry.date || "",
+      entry.kind,
+      trip ? "" : (entry.category || ""),
+      trip ? "" : (entry.payee || ""),
+      entry.description || "",
+      trip ? (entry.from || "") : "",
+      trip ? (entry.to || "") : "",
+      trip ? "" : centsToPlain(entry.amount || 0),
+      trip ? kmText(entry.km || 0) : "",
+      trip && entry.rate != null ? centsToPlain(entry.rate) : "",
+      mileage,
+      entry.note || ""
+    ].map(csvCell).join(",");
+  });
+  const csv = "\uFEFF" + header.join(",") + "\r\n" + rows.join("\r\n") + (rows.length ? "\r\n" : "");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "expense-mileage-log.csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+$("kind-expense").addEventListener("click", () => setKind("expense"));
+$("kind-trip").addEventListener("click", () => setKind("trip"));
+$("cancel").addEventListener("click", resetForm);
+document.querySelectorAll("[data-filter]").forEach((button) => {
+  button.addEventListener("click", () => {
+    filter = button.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+    render();
+  });
+});
+$("editor").addEventListener("submit", (event) => {
+  event.preventDefault();
+  showError("");
+  const date = $("date").value;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    showError("Choose a date.");
+    return;
+  }
+  const description = $("description").value.trim();
+  const note = $("note").value.trim();
+  let record;
+  if (kind === "expense") {
+    const amount = parseMoney($("amount").value);
+    const payee = $("payee").value.trim();
+    if (amount == null) {
+      showError(amount === undefined ? "Enter the amount in dollars and cents, for example 18.40." : "Enter the amount.");
+      return;
+    }
+    if (!payee && !description) {
+      showError("Add who you paid, or what it was for.");
+      return;
+    }
+    record = { kind: "expense", date, category: $("category").value, payee, description, amount, note };
+  } else {
+    const km = parseKm($("km").value);
+    const from = $("from").value.trim();
+    const to = $("to").value.trim();
+    if (km == null) {
+      showError("Enter the kilometres, up to one decimal place.");
+      return;
+    }
+    let rate = null;
+    if ($("rate").value.trim()) {
+      rate = parseMoney($("rate").value);
+      if (rate == null || rate <= 0 || !Number.isSafeInteger(km * rate)) {
+        showError("Enter dollars per kilometre, such as 1.00, or leave the rate blank.");
+        return;
+      }
+    }
+    if (!description && !from && !to) {
+      showError("Add where the trip went, or what it was for.");
+      return;
+    }
+    record = { kind: "trip", date, description, from, to, km, rate, note };
+  }
+  if (editing) {
+    const previous = entries.find((item) => item.id === editing);
+    record.id = editing;
+    record.created = previous ? previous.created : new Date().toISOString();
+    entries = entries.map((item) => item.id === editing ? record : item);
+  } else {
+    record.id = uid();
+    record.created = new Date().toISOString();
+    entries.push(record);
+  }
+  const today = todayISO();
+  const matches = filter === "all"
+    || (filter === "year" && record.date.slice(0, 4) === today.slice(0, 4))
+    || (filter === "month" && record.date.slice(0, 7) === today.slice(0, 7));
+  if (!matches) {
+    filter = "all";
+    document.querySelectorAll("[data-filter]").forEach((item) => item.setAttribute("aria-pressed", String(item.dataset.filter === "all")));
+  }
+  saveStore();
+  resetForm();
+  render();
+});
+$("export").addEventListener("click", downloadCsv);
+$("clear").addEventListener("click", () => {
+  if (!entries.length) return;
+  if (!confirm("Delete every entry in this log? This cannot be undone.")) return;
+  entries = [];
+  saveStore();
+  resetForm();
+  render();
+});
+
+try {
+  const stored = JSON.parse(localStorage.getItem(KEY) || "null");
+  if (stored && Array.isArray(stored.entries)) {
+    entries = stored.entries.filter((entry) => entry && (entry.kind === "expense" || entry.kind === "trip") && typeof entry.id === "string");
+  }
+} catch (err) {
+  entries = [];
+}
+$("date").value = todayISO();
+render();
+</script>
+</body>
+</html>

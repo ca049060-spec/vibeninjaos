@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0e1929">
+<title>GST/HST Calculator</title>
+<meta name="description" content="Calculate GST, HST and provincial sales tax for a Canadian sale. General rates from the Canada Revenue Agency.">
+<style>
+  :root {
+    --gold: #f5a623;
+    --gold-dark: #d4891a;
+    --navy: #1a2d4a;
+    --navy-deep: #0e1929;
+    --bg: #f0f2f6;
+    --card: #ffffff;
+    --ink: #111827;
+    --muted: #475569;
+    --line: #dde3ed;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+    color: #fff;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .mark {
+    width: 36px; height: 36px; border-radius: 9px; background: var(--gold);
+    color: var(--navy-deep); font-weight: 800; font-size: 0.72rem;
+    display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  header h1 { font-size: 1.05rem; margin: 0; letter-spacing: -0.02em; }
+  header p { margin: 0; color: rgba(255,255,255,0.7); font-size: 0.8rem; }
+  header a { color: #fff; font-size: 0.85rem; font-weight: 700; text-decoration: none; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 16px 16px 32px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow);
+  }
+  .label {
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 8px;
+  }
+  fieldset { border: 0; margin: 0; padding: 0; }
+  legend { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .choice label {
+    border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 10px;
+    font-size: 0.92rem; font-weight: 700; text-align: center; cursor: pointer; background: #f8fafc;
+  }
+  .choice input {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .choice label:has(input:checked) { border-color: var(--navy); background: var(--navy); color: #fff; }
+  .choice label:has(input:focus-visible) { outline: 3px solid var(--gold); outline-offset: 2px; }
+  label.field { display: block; font-size: 0.85rem; font-weight: 700; color: var(--muted); margin: 14px 0 6px; }
+  input, select, button { font: inherit; }
+  input, select {
+    width: 100%; max-width: 100%; min-width: 0; min-height: 48px; padding: 12px 14px; font-size: 1rem;
+    border: 1.5px solid var(--line); border-radius: 12px; background: #f8fafc; color: var(--ink);
+  }
+  input:focus, select:focus { outline: 3px solid rgba(245,166,35,0.45); border-color: var(--gold-dark); background: #fff; }
+  .choice input { min-height: 0; max-width: 1px; min-width: 0; }
+  .amount { font-size: 1.35rem; font-weight: 700; }
+  .result {
+    background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+    color: #fff; border: 0;
+  }
+  .result .label { color: var(--gold); }
+  .big { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; margin: 0; }
+  .rows { margin-top: 12px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.16); }
+  .row span:last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sub { padding-left: 12px; color: rgba(255,255,255,0.78); font-size: 0.92rem; }
+  .actions { display: flex; gap: 8px; margin-top: 14px; }
+  button.ghost, a.ghost {
+    flex: 1; min-height: 48px; display: flex; align-items: center; justify-content: center;
+    border-radius: 12px; border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1); color: #fff; font-weight: 700; text-decoration: none; text-align: center;
+  }
+  button.ghost { cursor: pointer; }
+  .hint, .source, .note { color: var(--muted); font-size: 0.88rem; }
+  .source a, .note a { color: var(--navy); }
+  .err { color: #9f1239; font-weight: 700; font-size: 0.9rem; margin: 8px 0 0; }
+  ul.rates { list-style: none; margin: 0; padding: 0; }
+  ul.rates li {
+    display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+    padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 0.95rem;
+  }
+  ul.rates li:last-child { border-bottom: 0; }
+  ul.rates strong { font-weight: 700; }
+  .rate-num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  noscript { display: block; padding: 16px; }
+  @media (max-width: 380px) {
+    .choice { grid-template-columns: 1fr; }
+    .big { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="mark" aria-hidden="true">GST</div>
+    <div>
+      <h1>GST/HST Calculator</h1>
+      <p>General sales tax by province</p>
+    </div>
+  </div>
+  <a href="/tools/gst-hst/">About</a>
+</header>
+<div class="wrap">
+  <form class="card" id="calc" autocomplete="off">
+    <fieldset>
+      <legend>Which amount is this?</legend>
+      <div class="choice">
+        <label><input type="radio" name="mode" value="add" checked> Price before tax</label>
+        <label><input type="radio" name="mode" value="remove"> Total with tax</label>
+      </div>
+    </fieldset>
+    <label class="field" for="province">Province or territory</label>
+    <select id="province" name="province"></select>
+    <label class="field" for="amount">Amount (CAD)</label>
+    <input class="amount" id="amount" name="amount" inputmode="decimal" placeholder="0.00" autocomplete="off">
+    <p class="err" id="error" hidden></p>
+    <p class="hint">Each tax is a percentage of the price before tax, rounded to the nearest cent. A half cent rounds up. The Canada Revenue Agency says rounding can move a total by a cent or two.</p>
+  </form>
+
+  <section class="card result" aria-live="polite">
+    <p class="label" id="result-label">Total</p>
+    <p class="big" id="result-total">—</p>
+    <div class="rows" id="result-rows"></div>
+    <div class="actions">
+      <button type="button" class="ghost" id="copy">Copy breakdown</button>
+      <a class="ghost" href="/tools/invoice/app/">Use on an invoice</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="label">General rates</h2>
+    <ul class="rates" id="rate-list"></ul>
+    <p class="source">These are the general GST/HST rates, and the provincial sales tax rates printed beside them, from the Canada Revenue Agency page <a href="https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-which-rate/calculator.html" rel="noopener noreferrer">GST/HST calculator (and rates)</a>. The table used here is the one in effect on or after 1 April 2025, including Nova Scotia HST at 14%. Checked 12 November 2026.</p>
+    <p class="note">HST is the 5% federal goods and services tax plus a provincial part. The breakdown splits the HST that was calculated, so the two parts add up to it. Where a province charges its own sales tax, that tax is worked out on the price before GST, not on top of the GST. British Columbia uses a higher PST for some goods, such as liquor. This page uses the general rate only. It is not tax advice, and it does not apply place-of-supply rules or exemptions. Zero-rated supplies, such as basic groceries, are taxed at 0%.</p>
+  </section>
+</div>
+<noscript><p>This calculator needs JavaScript. It runs in your browser and does not send the amount anywhere.</p></noscript>
+<script>
+/* calc:start */
+const DEN = 100000;
+const FEDERAL = 5000;
+const PROVINCES = [
+  { id: "AB", name: "Alberta", gst: 5000, pst: 0, taxName: "GST", pstName: "", hst: false },
+  { id: "BC", name: "British Columbia", gst: 5000, pst: 7000, taxName: "GST", pstName: "PST", hst: false },
+  { id: "MB", name: "Manitoba", gst: 5000, pst: 7000, taxName: "GST", pstName: "RST", hst: false },
+  { id: "NB", name: "New Brunswick", gst: 15000, pst: 0, taxName: "HST", pstName: "", hst: true },
+  { id: "NL", name: "Newfoundland and Labrador", gst: 15000, pst: 0, taxName: "HST", pstName: "", hst: true },
+  { id: "NT", name: "Northwest Territories", gst: 5000, pst: 0, taxName: "GST", pstName: "", hst: false },
+  { id: "NS", name: "Nova Scotia", gst: 14000, pst: 0, taxName: "HST", pstName: "", hst: true },
+  { id: "NU", name: "Nunavut", gst: 5000, pst: 0, taxName: "GST", pstName: "", hst: false },
+  { id: "ON", name: "Ontario", gst: 13000, pst: 0, taxName: "HST", pstName: "", hst: true },
+  { id: "PE", name: "Prince Edward Island", gst: 15000, pst: 0, taxName: "HST", pstName: "", hst: true },
+  { id: "QC", name: "Quebec", gst: 5000, pst: 9975, taxName: "GST", pstName: "QST", hst: false },
+  { id: "SK", name: "Saskatchewan", gst: 5000, pst: 6000, taxName: "GST", pstName: "PST", hst: false },
+  { id: "YT", name: "Yukon", gst: 5000, pst: 0, taxName: "GST", pstName: "", hst: false }
+];
+
+function roundMul(cents, parts) {
+  return Math.floor((cents * parts + DEN / 2) / DEN);
+}
+
+function sumTaxes(base, partsList) {
+  const taxes = partsList.map((part) => ({
+    name: part.name,
+    parts: part.parts,
+    cents: roundMul(base, part.parts)
+  }));
+  const taxSum = taxes.reduce((sum, tax) => sum + tax.cents, 0);
+  return { base, taxes, total: base + taxSum, adjusted: false };
+}
+
+function fromTotal(total, partsList) {
+  const combined = partsList.reduce((sum, part) => sum + part.parts, 0);
+  if (!combined) return { base: total, taxes: [], total, adjusted: false };
+  const divisor = DEN + combined;
+  let base = Math.floor((total * DEN + Math.floor(divisor / 2)) / divisor);
+  let result = sumTaxes(base, partsList);
+  let drift = total - result.total;
+  if (drift === 0) return result;
+  const nudged = sumTaxes(base + drift, partsList);
+  if (nudged.total === total) return nudged;
+  result.taxes[result.taxes.length - 1].cents += drift;
+  result.total = total;
+  result.adjusted = true;
+  return result;
+}
+
+function partsOf(prov) {
+  const list = [{ name: prov.taxName, parts: prov.gst }];
+  if (prov.pst) list.push({ name: prov.pstName, parts: prov.pst });
+  return list;
+}
+
+function rateText(parts) {
+  return (parts / 1000).toFixed(3).replace(/0+$/, "").replace(/\.$/, "") + "%";
+}
+/* calc:end */
+
+const $ = (id) => document.getElementById(id);
+const provinceSelect = $("province");
+PROVINCES.forEach((prov) => {
+  const option = document.createElement("option");
+  option.value = prov.id;
+  option.textContent = prov.name;
+  if (prov.id === "ON") option.selected = true;
+  provinceSelect.appendChild(option);
+});
+
+const rateList = $("rate-list");
+PROVINCES.forEach((prov) => {
+  const item = document.createElement("li");
+  const name = document.createElement("span");
+  name.textContent = prov.name;
+  const num = document.createElement("span");
+  num.className = "rate-num";
+  num.textContent = prov.pst
+    ? prov.taxName + " " + rateText(prov.gst) + " + " + prov.pstName + " " + rateText(prov.pst)
+    : prov.taxName + " " + rateText(prov.gst);
+  item.append(name, num);
+  rateList.appendChild(item);
+});
+
+function money(cents) {
+  const sign = cents < 0 ? "-" : "";
+  const abs = Math.abs(cents);
+  const dollars = Math.floor(abs / 100).toLocaleString("en-CA");
+  return sign + "$" + dollars + "." + String(abs % 100).padStart(2, "0");
+}
+
+function parseMoney(raw) {
+  let text = String(raw).trim().replace(/\s/g, "").replace(/^\$/, "");
+  if (!text) return null;
+  if (text.includes(",") && text.includes(".")) {
+    text = text.lastIndexOf(",") > text.lastIndexOf(".")
+      ? text.replace(/\./g, "").replace(",", ".")
+      : text.replace(/,/g, "");
+  } else if (text.includes(",")) {
+    const bits = text.split(",");
+    text = bits.length === 2 && bits[1].length <= 2
+      ? bits[0] + "." + bits[1]
+      : text.replace(/,/g, "");
+  }
+  if (!/^\d+(\.\d{1,2})?$/.test(text)) return undefined;
+  const [whole, frac = ""] = text.split(".");
+  if (whole.length > 8) return undefined;
+  return Number(whole) * 100 + Number((frac + "00").slice(0, 2));
+}
+
+let lastCopy = "";
+
+function render() {
+  const prov = PROVINCES.find((item) => item.id === provinceSelect.value) || PROVINCES[8];
+  const mode = document.querySelector('input[name="mode"]:checked').value;
+  const parsed = parseMoney($("amount").value);
+  const error = $("error");
+  const rows = $("result-rows");
+  rows.replaceChildren();
+  error.hidden = true;
+  if (parsed === undefined) {
+    error.hidden = false;
+    error.textContent = "Use dollars and cents, for example 100.50.";
+    $("result-total").textContent = "—";
+    $("result-label").textContent = "Total";
+    lastCopy = "";
+    return;
+  }
+  if (parsed === null) {
+    $("result-total").textContent = "—";
+    $("result-label").textContent = mode === "add" ? "Total with tax" : "Price before tax";
+    const prompt = document.createElement("p");
+    prompt.className = "hint";
+    prompt.style.color = "rgba(255,255,255,0.75)";
+    prompt.textContent = "Enter an amount.";
+    rows.appendChild(prompt);
+    lastCopy = "";
+    return;
+  }
+  const parts = partsOf(prov);
+  const result = mode === "add" ? sumTaxes(parsed, parts) : fromTotal(parsed, parts);
+  $("result-label").textContent = mode === "add" ? "Total with tax" : "Price before tax";
+  $("result-total").textContent = money(mode === "add" ? result.total : result.base);
+
+  const lines = [];
+  function addRow(label, cents, sub) {
+    const row = document.createElement("div");
+    row.className = "row" + (sub ? " sub" : "");
+    const left = document.createElement("span");
+    left.textContent = label;
+    const right = document.createElement("span");
+    right.textContent = money(cents);
+    row.append(left, right);
+    rows.appendChild(row);
+    lines.push((sub ? "  " : "") + label + ": " + money(cents));
+  }
+
+  addRow("Price before tax", result.base);
+  result.taxes.forEach((tax) => {
+    addRow(tax.name + " " + rateText(tax.parts), tax.cents);
+    if (prov.hst && tax.name === "HST") {
+      const federal = Math.floor((tax.cents * FEDERAL + Math.floor(prov.gst / 2)) / prov.gst);
+      addRow("Federal part of the HST", federal, true);
+      addRow("Provincial part of the HST", tax.cents - federal, true);
+    }
+  });
+  if (!prov.pst && !prov.hst) {
+    const only = document.createElement("p");
+    only.className = "hint";
+    only.style.color = "rgba(255,255,255,0.75)";
+    only.textContent = "No separate provincial sales tax.";
+    rows.appendChild(only);
+    lines.push("No separate provincial sales tax.");
+  }
+  addRow("Total", result.total);
+  if (result.adjusted) {
+    const note = document.createElement("p");
+    note.className = "hint";
+    note.style.color = "rgba(255,255,255,0.75)";
+    note.textContent = "Rounded so the taxes plus the price equal the total you typed.";
+    rows.appendChild(note);
+  }
+  lastCopy = [prov.name, ...lines, "Source: Canada Revenue Agency GST/HST calculator and rates, in effect on or after 1 April 2025."].join("\n");
+}
+
+document.getElementById("calc").addEventListener("input", render);
+$("copy").addEventListener("click", async () => {
+  if (!lastCopy) return;
+  try {
+    await navigator.clipboard.writeText(lastCopy);
+    $("copy").textContent = "Copied";
+    setTimeout(() => { $("copy").textContent = "Copy breakdown"; }, 1600);
+  } catch (err) {
+    $("copy").textContent = "Select the numbers above";
+  }
+});
+render();
+</script>
+</body>
+</html>
