@@ -578,3 +578,25 @@ main a:not(.btn) {
   border-color: var(--accent-hover);
 }
 
+/* Home, phone: a shorter, plainer hero so the whole live tool card fits on the first screen (landing loop round 3, 2026-11-11) */
+@media (max-width: 600px) {
+  .home .hero {
+    padding-top: 1.5rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .home h1 {
+    margin-bottom: 0.75rem;
+  }
+
+  .home .lead {
+    color: #cbd5e1;
+    font-size: 1.1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .home .hero + .card-section {
+    padding-top: 1.5rem;
+  }
+}
+
