@@ -345,6 +345,7 @@ function render() {
 }
 
 document.getElementById("calc").addEventListener("input", render);
+document.getElementById("calc").addEventListener("submit", (event) => event.preventDefault());
 $("copy").addEventListener("click", async () => {
   if (!lastCopy) return;
   try {

@@ -383,26 +383,32 @@ function csvCell(value) {
   const text = value == null ? "" : String(value);
   return /[",\n\r]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
 }
+function csvText(value) {
+  const text = value == null ? "" : String(value);
+  const safe = /^[=+\-@\t\r]/.test(text) ? "'" + text : text;
+  return csvCell(safe);
+}
 function downloadCsv() {
   const shown = visibleEntries().slice().sort((a, b) => (a.date || "").localeCompare(b.date || ""));
   const header = ["date","kind","category","payee","description","from","to","amount_cad","kilometres","rate_per_km_cad","mileage_amount_cad","note"];
   const rows = shown.map((entry) => {
     const trip = entry.kind === "trip";
     const mileage = trip && entry.rate != null ? centsToPlain(mileageCents(entry.km, entry.rate)) : "";
-    return [
-      entry.date || "",
-      entry.kind,
-      trip ? "" : (entry.category || ""),
-      trip ? "" : (entry.payee || ""),
-      entry.description || "",
-      trip ? (entry.from || "") : "",
-      trip ? (entry.to || "") : "",
+    const cells = [
+      csvText(entry.date || ""),
+      csvText(entry.kind),
+      csvText(trip ? "" : (entry.category || "")),
+      csvText(trip ? "" : (entry.payee || "")),
+      csvText(entry.description || ""),
+      csvText(trip ? (entry.from || "") : ""),
+      csvText(trip ? (entry.to || "") : ""),
       trip ? "" : centsToPlain(entry.amount || 0),
       trip ? kmText(entry.km || 0) : "",
       trip && entry.rate != null ? centsToPlain(entry.rate) : "",
       mileage,
-      entry.note || ""
-    ].map(csvCell).join(",");
+      csvText(entry.note || "")
+    ];
+    return cells.join(",");
   });
   const csv = "\uFEFF" + header.join(",") + "\r\n" + rows.join("\r\n") + (rows.length ? "\r\n" : "");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });

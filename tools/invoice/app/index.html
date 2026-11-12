@@ -578,6 +578,7 @@ $("add-line").addEventListener("click", () => {
   persist();
 });
 document.getElementById("editor").addEventListener("input", persist);
+document.getElementById("editor").addEventListener("submit", (event) => event.preventDefault());
 taxMode.addEventListener("change", persist);
 $("print").addEventListener("click", () => {
   const ok = renderSheet();
