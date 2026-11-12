@@ -504,3 +504,45 @@ main a:not(.btn) {
 
 .workbench-list a { font-weight: 600; }
 
+/* Home, phone: header links on one tidy row (landing loop round 1, 2026-11-11) */
+@media (max-width: 600px) {
+  .home .site-header {
+    padding: 0.5rem 0 0.25rem;
+  }
+
+  .home .nav-row {
+    row-gap: 0;
+  }
+
+  .home .site-header nav {
+    width: 100%;
+  }
+
+  .home .nav-list {
+    justify-content: space-between;
+    column-gap: 0.75rem;
+    row-gap: 0;
+  }
+
+  /* The brand already links home, so the extra "Home" link is dropped here. */
+  .home .nav-list li:has(> a[aria-current="page"]) {
+    display: none;
+  }
+
+  .home .nav-list a {
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+  }
+
+  .home .brand {
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+  }
+
+  .home .hero {
+    padding-top: 2rem;
+  }
+}
+
