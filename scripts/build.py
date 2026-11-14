@@ -6,7 +6,7 @@ This script reads every card and writes:
   tools/<slug>/index.html   the tool's own page
   tools/index.html          the catalog of all tools
   index.html                the featured and workbench blocks on the home page
-  every page                the shared banner, header and footer
+  every page                the shared head links, header and footer
   sitemap.xml               every public page
 
 Run from the repository root:
@@ -41,21 +41,32 @@ REQUIRED = ["name", "tagline", "slug", "status", "category", "audience", "before
             "try_url", "try_label", "price_note"]
 
 NAV = [
-    ("/", "Home"),
     ("/tools/", "Tools"),
     ("/how-it-works.html", "How it works"),
-    ("/list-your-tool.html", "List your tool"),
     ("/contact.html", "Contact"),
 ]
 
-BANNER = ('<div class="construction-banner" role="status">'
-          '<strong>Early preview.</strong> Some tools are live and some are still being built. '
-          'Each tool says which.</div>')
+MARK = ('<svg class="mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">'
+        '<rect width="32" height="32" rx="8" fill="#EA580C"/>'
+        '<path fill="#0F172A" d="M16 4.5 18.7 13.3 27.5 16 18.7 18.7 16 27.5 13.3 18.7 4.5 16 13.3 13.3Z"/>'
+        '</svg>')
 
-FOOTER = ('<footer class="site-footer"><div class="container">'
-          '<p>VibeNinjaOS (vibeninjaos.app): working tools, built with AI. '
-          '<a href="/tools/">All tools</a> · <a href="/list-your-tool.html">List your tool</a> · '
-          '<a href="/contact.html">Contact</a></p></div></footer>')
+HEAD = """
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <meta name="theme-color" content="#0F172A">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&display=swap">
+  """
+
+FOOTER = ('<footer class="site-footer"><div class="container footer-inner">'
+          '<p>VibeNinjaOS (vibeninjaos.app): working tools, built with AI.</p>'
+          '<nav aria-label="Footer"><a href="/tools/">All tools</a>'
+          '<a href="/how-it-works.html">How it works</a>'
+          '<a href="/list-your-tool.html">List your tool</a>'
+          '<a href="/contact.html">Contact</a></nav>'
+          '</div></footer>')
 
 E = html.escape
 
@@ -65,10 +76,17 @@ def header(current: str) -> str:
     for href, label in NAV:
         here = ' aria-current="page"' if href == current else ""
         items.append(f'<li><a href="{href}"{here}>{label}</a></li>')
-    return (f"{BANNER}\n  <header class=\"site-header\"><div class=\"container nav-row\">"
-            f"<a href=\"/\" class=\"brand\">🥷 VibeNinjaOS</a>"
-            f"<nav aria-label=\"Main navigation\"><ul class=\"nav-list\">{''.join(items)}</ul></nav>"
-            f"</div></header>")
+    links = "".join(items)
+    return (
+        '<a class="skip-link" href="#content">Skip to content</a>\n'
+        '  <header class="site-header"><div class="container nav-row">'
+        f'<a href="/" class="brand">{MARK}<span class="brand-text">VibeNinja<span class="brand-os">OS</span></span></a>'
+        f'<nav class="nav-desktop" aria-label="Main"><ul class="nav-list">{links}</ul></nav>'
+        '<p class="preview-tag">Early preview<span class="sr-only">. Some tools are live and some are still being built. Each tool says which.</span></p>'
+        '<details class="nav-details"><summary class="nav-toggle">'
+        '<span class="nav-open-label">Menu</span><span class="nav-close-label">Close</span></summary>'
+        f'<nav aria-label="Main"><ul class="nav-list">{links}</ul></nav>'
+        '</details></div></header>')
 
 
 def load_tools() -> list[dict]:
@@ -103,7 +121,8 @@ def card_html(t: dict, level: str = "h3") -> str:
 
 def workbench_list(tools: list[dict]) -> str:
     rows = "".join(
-        f'<li><a href="/tools/{t["slug"]}/">{E(t["name"])}</a>: {E(t["tagline"])}</li>' for t in tools)
+        f'<li><a href="/tools/{t["slug"]}/"><span class="wb-name">{E(t["name"])}</span>'
+        f'<span class="wb-tag">{E(t["tagline"])}</span></a></li>' for t in tools)
     return f'<ul class="workbench-list">{rows}</ul>'
 
 
@@ -116,12 +135,13 @@ def page(title: str, description: str, path: str, current: str, body: str) -> st
   <title>{E(title)}</title>
   <meta name="description" content="{E(description)}">
   <link rel="canonical" href="{SITE_URL}{path}">
+  <!-- site:head -->{HEAD}<!-- /site:head -->
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <!-- site:header -->{header(current)}<!-- /site:header -->
 
-  <main class="container">
+  <main id="content" class="container">
 {body}
   </main>
 
@@ -222,12 +242,16 @@ def build() -> dict[Path, str]:
     for name, current in ROOT_PAGES.items():
         path = ROOT / name
         text = path.read_text(encoding="utf-8")
+        text = replace_block(text, "head", HEAD)
         text = replace_block(text, "header", header(current))
         text = replace_block(text, "footer", FOOTER)
         if name == "index.html":
-            ready = [t for t in tools if t["status"] != "workbench"]
+            # QuickQuote is the home page's one door, so it is not repeated here.
+            ready = [t for t in tools if t["status"] != "workbench" and t["slug"] != "quickquote"]
             bench = [t for t in tools if t["status"] == "workbench"]
-            text = replace_block(text, "featured", f'<div class="tool-grid">{"".join(card_html(t) for t in ready)}</div>')
+            featured = (f'<div class="tool-grid">{"".join(card_html(t) for t in ready)}</div>'
+                        if ready else '<p class="muted">The other tools are on the workbench.</p>')
+            text = replace_block(text, "featured", featured)
             text = replace_block(text, "workbench", workbench_list(bench))
         out[path] = text
 
