@@ -318,7 +318,11 @@ main a:not(.btn) { color: var(--blue); }
   color: var(--white);
   max-width: 14ch;
   margin: 0 0 1.25rem;
+  /* Negative tracking disables kerning, which leaves a gap before the comma and period. */
+  letter-spacing: normal;
 }
+
+.qq-hero { display: none; }
 
 .band { padding: 4.25rem 0; }
 
@@ -402,6 +406,7 @@ main a:not(.btn) { color: var(--blue); }
   border-radius: 1.5rem;
   overflow: hidden;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  width: 100%;
   max-width: 24rem;
 }
 
@@ -773,6 +778,23 @@ main.container { padding-top: 2.5rem; padding-bottom: 3rem; }
     display: flex;
     align-items: center;
   }
+
+  .hero { padding: 2.5rem 0; }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(15rem, 0.85fr);
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .qq-hero { display: block; }
+
+  .qq-hero figcaption { color: var(--muted-dark); }
+
+  .qq-below { display: none; }
+
+  .band-does .split { display: block; }
 
   .split { grid-template-columns: 1.05fr 0.95fr; gap: 4rem; }
   .steps, .grid-3 { grid-template-columns: repeat(3, 1fr); }
