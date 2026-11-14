@@ -4,7 +4,7 @@ Website for vibeninjaos.app: the home for the tools Shawn builds with AI, and la
 
 ## How the site is laid out
 
-- `/` home: what the site is, the tools ready now, the tools on the workbench, how they get built.
+- `/` home: one promise and one next step, open QuickQuote. Other tools and the workbench sit below that. How the tools get built lives on `/how-it-works.html`.
 - `/tools/` the catalog. Every tool has its own space at `/tools/<slug>/`.
 - `/tools/<slug>/tool.json` the tool's card (its PROJECT_HANDOFF): name, status, problem, solution, who it is for, price note, where to try it.
 - `/tools/<slug>/index.html` the tool's page, generated from the card.
@@ -22,7 +22,7 @@ python scripts/build.py                           # writes the tool page, catalo
 python scripts/build.py --check                   # exit 1 if any page is out of date
 ```
 
-The shared banner, header and footer live in `scripts/build.py` and are written into every page between `<!-- site:header -->` and `<!-- site:footer -->` markers. Edit them there, not in the pages. Standard library Python only; Netlify runs no build step, the output is committed.
+The shared head links, header and footer live in `scripts/build.py` and are written into every page between the `<!-- site:head -->`, `<!-- site:header -->` and `<!-- site:footer -->` markers. Edit them there, not in the pages. The home page leads with QuickQuote, so the generated block of other tools leaves QuickQuote out. Standard library Python only; Netlify runs no build step, the output is committed.
 
 ## Status
 
