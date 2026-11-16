@@ -4,14 +4,14 @@ Website for vibeninjaos.app: the home for the tools Shawn builds with AI, and la
 
 ## How the site is laid out
 
-- `/` home: one promise and one next step, open QuickQuote. Other tools and the workbench sit below that. How the tools get built lives on `/how-it-works.html`.
+- `/` home: one promise, price the job before you leave the driveway. The tool shelf below lists every tool with its status. How the tools get built lives on `/how-it-works.html`.
 - `/tools/` the catalog. Every tool has its own space at `/tools/<slug>/`.
 - `/tools/<slug>/tool.json` the tool's card (its PROJECT_HANDOFF): name, status, problem, solution, who it is for, price note, where to try it.
 - `/tools/<slug>/index.html` the tool's page, generated from the card.
 - `/tools/<slug>/app/` the tool itself, when it is a static web app (QuickQuote is). A tool that needs a server gets its own Netlify site on a subdomain, `<slug>.vibeninjaos.app`, and its card's `try_url` points there.
 - `/how-it-works.html`, `/contact.html`, `/list-your-tool.html` (the start of the marketplace: a Netlify form), `/thanks.html`.
 
-Tool status is one of three words, shown on every card: `live` (works today), `by-request` (works, done for you while it is finished), `workbench` (not ready). Prices appear only as notes on the card, marked planned until something is for sale.
+Tool status is one of three, shown on every card: `live` (chip: Live), `by-request` (chip: By request), `workbench` (chip: Being built). Prices appear only as notes on the card, marked planned until something is for sale.
 
 ## Adding or changing a tool
 
@@ -22,7 +22,7 @@ python scripts/build.py                           # writes the tool page, catalo
 python scripts/build.py --check                   # exit 1 if any page is out of date
 ```
 
-The shared head links, header and footer live in `scripts/build.py` and are written into every page between the `<!-- site:head -->`, `<!-- site:header -->` and `<!-- site:footer -->` markers. Edit them there, not in the pages. The home page leads with QuickQuote, so the generated block of other tools leaves QuickQuote out. Standard library Python only; Netlify runs no build step, the output is committed.
+The shared head links, header and footer live in `scripts/build.py` and are written into every page between the `<!-- site:head -->`, `<!-- site:header -->` and `<!-- site:footer -->` markers. Edit them there, not in the pages. The home page tool shelf is generated there too, between the `<!-- site:shelf -->` markers, and it includes every tool. Standard library Python only; Netlify runs no build step, the output is committed.
 
 ## Status
 
