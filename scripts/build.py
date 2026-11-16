@@ -5,9 +5,15 @@ This script reads every card and writes:
 
   tools/<slug>/index.html   the tool's own page
   tools/index.html          the catalog of all tools
-  index.html                the featured and workbench blocks on the home page
-  every page                the shared head links, header and footer
+  list-your-tool.html       the shared head links, header and footer
   sitemap.xml               every public page
+
+It does not read or write the hand-authored marketing pages:
+
+  index.html, how-it-works.html, pricing.html, contact.html, thanks.html, styles.css
+
+Those pages are published as written. Tool pages and list-your-tool.html link
+to /styles-legacy.css so they keep the previous stylesheet.
 
 Run from the repository root:
 
@@ -31,6 +37,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 TOOLS = ROOT / "tools"
 SITE_URL = "https://vibeninjaos.app"
+LEGACY_STYLESHEET = "/styles-legacy.css"
+
+# Published exactly as authored. build() must never include these paths.
+UNTOUCHED = (
+    "index.html",
+    "how-it-works.html",
+    "pricing.html",
+    "contact.html",
+    "thanks.html",
+    "styles.css",
+)
 
 STATUS = {
     "live": ("Live", "Try it now. It works today."),
@@ -136,7 +153,7 @@ def page(title: str, description: str, path: str, current: str, body: str) -> st
   <meta name="description" content="{E(description)}">
   <link rel="canonical" href="{SITE_URL}{path}">
   <!-- site:head -->{HEAD}<!-- /site:head -->
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="{LEGACY_STYLESHEET}">
 </head>
 <body>
   <!-- site:header -->{header(current)}<!-- /site:header -->
@@ -217,11 +234,7 @@ def catalog(tools: list[dict]) -> str:
 
 
 ROOT_PAGES = {
-    "index.html": "/",
-    "how-it-works.html": "/how-it-works.html",
     "list-your-tool.html": "/list-your-tool.html",
-    "contact.html": "/contact.html",
-    "thanks.html": "/contact.html",
 }
 
 
@@ -240,22 +253,21 @@ def build() -> dict[Path, str]:
     out[TOOLS / "index.html"] = catalog(tools)
 
     for name, current in ROOT_PAGES.items():
+        if name in UNTOUCHED:
+            sys.exit(f"refusing to rewrite hand-authored {name}")
         path = ROOT / name
         text = path.read_text(encoding="utf-8")
         text = replace_block(text, "head", HEAD)
         text = replace_block(text, "header", header(current))
         text = replace_block(text, "footer", FOOTER)
-        if name == "index.html":
-            # QuickQuote is the home page's one door, so it is not repeated here.
-            ready = [t for t in tools if t["status"] != "workbench" and t["slug"] != "quickquote"]
-            bench = [t for t in tools if t["status"] == "workbench"]
-            featured = (f'<div class="tool-grid">{"".join(card_html(t) for t in ready)}</div>'
-                        if ready else '<p class="muted">The other tools are on the workbench.</p>')
-            text = replace_block(text, "featured", featured)
-            text = replace_block(text, "workbench", workbench_list(bench))
+        text = text.replace('href="/styles.css"', f'href="{LEGACY_STYLESHEET}"')
         out[path] = text
 
-    urls = ["/", "/tools/", "/how-it-works.html", "/list-your-tool.html", "/contact.html"]
+    for name in UNTOUCHED:
+        if (ROOT / name) in out:
+            sys.exit(f"refusing to rewrite hand-authored {name}")
+
+    urls = ["/", "/tools/", "/how-it-works.html", "/pricing.html", "/list-your-tool.html", "/contact.html"]
     urls += [f"/tools/{t['slug']}/" for t in tools]
     out[ROOT / "sitemap.xml"] = ('<?xml version="1.0" encoding="UTF-8"?>\n'
                                  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

@@ -3,91 +3,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How it works | VibeNinjaOS</title>
-  <meta name="description" content="How we build tools with AI without the project falling apart: two rooms, reusable parts, a price check first and calm quality checks.">
-  <link rel="canonical" href="https://vibeninjaos.app/how-it-works.html">
-  <!-- site:head -->
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="icon" href="/favicon.ico" sizes="32x32">
-  <meta name="theme-color" content="#0F172A">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&display=swap">
-  <!-- /site:head -->
-  <link rel="stylesheet" href="/styles.css">
+  <title>How It Works — VibeNinjaOS</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- site:header --><a class="skip-link" href="#content">Skip to content</a>
-  <header class="site-header"><div class="container nav-row"><a href="/" class="brand"><svg class="mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#EA580C"/><path fill="#0F172A" d="M16 4.5 18.7 13.3 27.5 16 18.7 18.7 16 27.5 13.3 18.7 4.5 16 13.3 13.3Z"/></svg><span class="brand-text">VibeNinja<span class="brand-os">OS</span></span></a><nav class="nav-desktop" aria-label="Main"><ul class="nav-list"><li><a href="/tools/">Tools</a></li><li><a href="/how-it-works.html" aria-current="page">How it works</a></li><li><a href="/contact.html">Contact</a></li></ul></nav><p class="preview-tag">Early preview<span class="sr-only">. Some tools are live and some are still being built. Each tool says which.</span></p><details class="nav-details"><summary class="nav-toggle"><span class="nav-open-label">Menu</span><span class="nav-close-label">Close</span></summary><nav aria-label="Main"><ul class="nav-list"><li><a href="/tools/">Tools</a></li><li><a href="/how-it-works.html" aria-current="page">How it works</a></li><li><a href="/contact.html">Contact</a></li></ul></nav></details></div></header><!-- /site:header -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo">
+        <span class="brand-badge">VN</span>
+        <span>VibeNinjaOS<span class="brand-domain">.app</span></span>
+      </a>
+      <nav aria-label="Primary Navigation">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-btn">Home</a></li>
+          <li><a href="how-it-works.html" class="nav-btn active">How It Works</a></li>
+          <li><a href="pricing.html" class="nav-btn">Pricing</a></li>
+          <li><a href="contact.html" class="nav-btn">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
 
-  <main id="content" class="container">
-    <section class="page-intro">
-      <h1>How VibeNinjaOS Works</h1>
-      <p class="lead">Four simple rules turn chaotic AI chats into a repeatable software workshop.</p>
-    </section>
+      <span class="eyebrow">Architecture</span>
+      <h1 id="how-headline">How VibeNinjaOS Works</h1>
+      <p class="lead">
+        VibeNinjaOS replaces chaotic chat sessions with four practical operating rules: Two Rooms, a Parts Warehouse, Margin Targets, and a Coaching Culture.
+      </p>
 
-    <section class="card-section">
-      <h2>How the tools get built</h2>
-      <p>Building an app in one long AI chat works for about 25 minutes, then it starts forgetting rules and breaking what already worked. We hit that wall building AutoVibe, so we built a better way to work.</p>
-      <div class="grid-4">
-        <article class="card"><span class="step-badge">1</span><h3>Plan first</h3><p>Decide what the tool does and what it is worth before any code is written.</p></article>
-        <article class="card"><span class="step-badge">2</span><h3>Reuse parts</h3><p>Start from tested building blocks instead of asking the AI to invent everything.</p></article>
-        <article class="card"><span class="step-badge">3</span><h3>One room per tool</h3><p>Each tool is built in its own space, so one build never breaks another.</p></article>
-        <article class="card"><span class="step-badge">4</span><h3>Check, then share</h3><p>Every tool is checked against its plan before it goes on this site.</p></article>
+      <!-- PILLAR 1: THE TWO ROOMS -->
+      <div class="section">
+        <span class="eyebrow">Pillar 1</span>
+        <h2>The Two Rooms: Playbooks vs. Clients</h2>
+        <p style="color: var(--text-secondary); max-width: 760px;">
+          Every file in your workspace answers one of two questions: <em>How do we run our company?</em> or <em>What are we building for this specific project?</em> VibeNinjaOS separates them into two strict directories that never mix.
+        </p>
+
+        <div class="grid-2" style="margin-top: 24px;">
+          <div class="card">
+            <div>
+              <h3>1. The Read-Only Playbooks Room</h3>
+              <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                Holds your company standards, blank templates, quality checklists, and the reusable Parts Warehouse. Delivery agents have <strong>read-only</strong> access here so an active build can never corrupt your master templates.
+              </p>
+              <pre class="code-tree">01_OPERATIONS_PLAYBOOKS/  [READ-ONLY]
+├── _index_v1.md          (&lt;50 lines)
+├── 01_sales_and_sow_templates/
+├── 02_production_sops/
+├── 03_quality_control_checklists/
+└── PARTS_WAREHOUSE/</pre>
+            </div>
+          </div>
+
+          <div class="card card-highlight">
+            <div>
+              <h3>2. The Read-Write Clients Room</h3>
+              <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                When you start a new app or client build, agents copy the blank template from Playbooks and save all active work inside an isolated project folder using identical numbered subfolders.
+              </p>
+              <pre class="code-tree">02_CLIENTS_VAULT/         [READ-WRITE]
+└── project_autovibe_v1/
+    ├── 01_Needs_Assessment/
+    ├── 02_Signed_SOW/
+    ├── 03_Active_Build_Workbench/
+    └── 04_QC_Signoff/</pre>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
 
-    <section class="card-section">
-      <h2>1. The Two Rooms (Clean Data Separation)</h2>
-      <div class="grid-2">
-        <article class="card">
-          <h3>Room 1: The Playbooks Room (Read-Only)</h3>
-          <p>
-            Holds your company standards, quality checklists, and reusable code modules organized by function. While building a project, specialist agents can read from this room but cannot overwrite it—keeping your core system clean.
+      <!-- PILLAR 2: THE PARTS WAREHOUSE -->
+      <div class="section">
+        <span class="eyebrow">Pillar 2</span>
+        <h2>The Parts Warehouse</h2>
+        <p style="color: var(--text-secondary); max-width: 760px;">
+          Most apps share the same foundational plumbing: responsive layouts, photo uploaders, interactive canvases, and local map routers. When an agent writes all of that from scratch every time, bugs multiply.
+        </p>
+        <div class="card" style="margin-top: 20px;">
+          <h3>Slice, Dice, and Customize</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 12px;">
+            In VibeNinjaOS, proven modules live inside <code>01_OPERATIONS_PLAYBOOKS/PARTS_WAREHOUSE/</code>. During the AutoVibe build, instead of inventing a camera uploader, a 2.5D truck suspension canvas, and a tire shop finder in a single prompt, each part was modularized so it can be reused across future builds:
           </p>
-        </article>
-        <article class="card">
-          <h3>Room 2: The Clients Room (Read-Write)</h3>
-          <p>
-            Every app or client project gets its own dedicated folder following the exact same step-by-step layout: needs assessment, scope, build files, schedule, and quality sign-off.
-          </p>
-        </article>
+          <ul class="compare-list">
+            <li><span class="marker-good">[Part A]</span><span><strong>Camera &amp; Preset Shell:</strong> Mobile photo input paired with pre-loaded calibration trucks so you can test immediately without uploading a file.</span></li>
+            <li><span class="marker-good">[Part B]</span><span><strong>Layered Canvas Compositor:</strong> Handles ride-height lift/drop math and wheel-well coordinates cleanly.</span></li>
+            <li><span class="marker-good">[Part C]</span><span><strong>Local Shop Locator:</strong> Connects tire &amp; rim selections to nearby shop lookup and turn-by-turn map links.</span></li>
+          </ul>
+        </div>
       </div>
-    </section>
 
-    <section class="card-section">
-      <h2>2. The Parts Warehouse (Slice, Dice &amp; Customize)</h2>
-      <p>
-        Most apps share the same building blocks: camera uploaders, pricing tables, map locators, and layout shells. Instead of burning tokens asking an AI to invent everything from zero, VibeNinjaOS keeps a <strong>Parts Warehouse</strong> inside your Playbooks room.
-      </p>
-      <p class="note">
-        <strong>Example Target:</strong> On a typical build like AutoVibe, an agent might pull 80% of the structure from existing warehouse blocks and spend tokens only on the final 20% of custom logic (illustrative example).
-      </p>
-    </section>
+      <!-- PILLAR 3: MARGIN TARGETS -->
+      <div class="section">
+        <span class="eyebrow">Pillar 3</span>
+        <h2>Margin Targets for Every Product</h2>
+        <p style="color: var(--text-secondary); max-width: 760px;">
+          Unstructured AI coding burns hours and API tokens in endless retry loops. VibeNinjaOS assigns a clear margin target before coding starts and enforces a <strong>3-Pivot Circuit Breaker</strong>—if an agent fails to fix an issue three times in a row, it stops and escalates instead of burning tokens.
+        </p>
 
-    <section class="card-section">
-      <h2>3. Margin Targets for Every Product</h2>
-      <p>
-        Every project starts with a simple two-side check before coding begins: what will this cost in AI compute tokens vs. what is the finished tool worth? Setting clear margin targets upfront stops endless token loops and keeps builds focused on features that matter.
-      </p>
-      <p class="note">
-        <strong>Example Numbers:</strong> A builder might compare an estimated $3.00 in internal AI compute against a $500 or $5,000 custom project budget before approving the build (example figures only).
-      </p>
-    </section>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Unstructured Single Chat <span class="example-badge">Illustrative Example</span></th>
+                <th>VibeNinjaOS Scoped Build <span class="example-badge">Illustrative Example</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Pre-Build Scope Gate</strong></td>
+                <td>None (starts coding immediately)</td>
+                <td>Locked Statement of Work before code is written</td>
+              </tr>
+              <tr>
+                <td><strong>Reusable Parts Ratio</strong></td>
+                <td>0% (100% written from scratch)</td>
+                <td>Target 80% pulled from Parts Warehouse (Example)</td>
+              </tr>
+              <tr>
+                <td><strong>Token Burn Protection</strong></td>
+                <td>Unlimited retry loops on broken code</td>
+                <td>Halts after 3 failed pivots for root-cause review</td>
+              </tr>
+              <tr>
+                <td><strong>Dual-Ledger Tracking</strong></td>
+                <td>Untracked API spend</td>
+                <td>Tracks internal token cost vs. target build value (Example: $5 token cap vs. $1,500 target build value)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-    <section class="card-section">
-      <h2>4. A Coaching Culture with No Blame</h2>
-      <p>
-        Yelling at an AI in all-caps when it makes a mistake often makes it hide errors or guess blindly. VibeNinjaOS uses structured quality gates and calm root-cause questions—asking <em>"How did you get here, and what were the reasons for choosing A over B?"</em>—so mistakes are caught early and turned into better playbook rules.
-      </p>
-    </section>
+      <!-- PILLAR 4: COACHING CULTURE -->
+      <div class="section">
+        <span class="eyebrow">Pillar 4</span>
+        <h2>A Coaching Culture With No Blame</h2>
+        <p style="color: var(--text-secondary); max-width: 760px;">
+          Typing in all-caps or scolding an AI agent when code breaks often causes it to take shortcuts, delete working features, or claim a bug is fixed when it isn't.
+        </p>
 
-    <section class="cta-banner">
-      <h2>Have questions about the workflow?</h2>
-      <a href="/contact.html" class="btn btn-primary">Contact Us</a>
-    </section>
+        <div class="grid-3" style="margin-top: 24px;">
+          <div class="card">
+            <div>
+              <h3>"How did you get here?"</h3>
+              <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                When an output misses the mark, the quality control step asks the agent to trace the exact step and assumption that led to the error so the root rule can be updated.
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div>
+              <h3>Good Catch Protocol</h3>
+              <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                Agents are instructed to flag missing requirements or aspect-ratio conflicts immediately rather than guessing silently.
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div>
+              <h3>Pre-Flight Quality Gate</h3>
+              <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                No deliverable is marked complete until a separate read-only Quality Control check verifies syntax, sample test data, and Statement of Work alignment.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" style="text-align: center;">
+        <button type="button" class="btn btn-primary" onclick="window.location.href='pricing.html'">Explore Pricing Plans</button>
+      </div>
+    
   </main>
-
-  <!-- site:footer --><footer class="site-footer"><div class="container footer-inner"><p>VibeNinjaOS (vibeninjaos.app): working tools, built with AI.</p><nav aria-label="Footer"><a href="/tools/">All tools</a><a href="/how-it-works.html">How it works</a><a href="/list-your-tool.html">List your tool</a><a href="/contact.html">Contact</a></nav></div></footer><!-- /site:footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>VibeNinjaOS</strong> (vibeninjaos.app) — Structured AI agent workflows for builders.</div>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <a href="index.html" class="nav-btn">Home</a>
+        <a href="how-it-works.html" class="nav-btn">How It Works</a>
+        <a href="pricing.html" class="nav-btn">Pricing</a>
+        <a href="contact.html" class="nav-btn">Contact</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
