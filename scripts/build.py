@@ -5,7 +5,7 @@ This script reads every card and writes:
 
   tools/<slug>/index.html   the tool's own page
   tools/index.html          the catalog of all tools
-  index.html                the featured and workbench blocks on the home page
+  index.html                the tool shelf on the home page
   every page                the shared head links, header and footer
   sitemap.xml               every public page
 
@@ -35,7 +35,7 @@ SITE_URL = "https://vibeninjaos.app"
 STATUS = {
     "live": ("Live", "Try it now. It works today."),
     "by-request": ("By request", "Works today. Done for you by request while it is finished."),
-    "workbench": ("On the workbench", "Being designed or built. Not ready yet."),
+    "workbench": ("Being built", "Being designed or built. Not ready yet."),
 }
 REQUIRED = ["name", "tagline", "slug", "status", "category", "audience", "before", "after",
             "try_url", "try_label", "price_note"]
@@ -47,20 +47,20 @@ NAV = [
 ]
 
 MARK = ('<svg class="mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">'
-        '<rect width="32" height="32" rx="8" fill="#EA580C"/>'
-        '<path fill="#0F172A" d="M16 4.5 18.7 13.3 27.5 16 18.7 18.7 16 27.5 13.3 18.7 4.5 16 13.3 13.3Z"/>'
+        '<rect width="32" height="32" rx="10" fill="#F06A1D"/>'
+        '<path fill="#0B1324" d="M16 4.5 18.7 13.3 27.5 16 18.7 18.7 16 27.5 13.3 18.7 4.5 16 13.3 13.3Z"/>'
         '</svg>')
 
 HEAD = """
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
-  <meta name="theme-color" content="#0F172A">
+  <meta name="theme-color" content="#0B1324">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap">
   """
 
-FOOTER = ('<footer class="site-footer"><div class="container footer-inner">'
+FOOTER = ('<footer class="site-footer on-ink"><div class="container footer-inner">'
           '<p>VibeNinjaOS (vibeninjaos.app): working tools, built with AI.</p>'
           '<nav aria-label="Footer"><a href="/tools/">All tools</a>'
           '<a href="/how-it-works.html">How it works</a>'
@@ -79,7 +79,7 @@ def header(current: str) -> str:
     links = "".join(items)
     return (
         '<a class="skip-link" href="#content">Skip to content</a>\n'
-        '  <header class="site-header"><div class="container nav-row">'
+        '  <header class="site-header on-ink"><div class="container nav-row">'
         f'<a href="/" class="brand">{MARK}<span class="brand-text">VibeNinja<span class="brand-os">OS</span></span></a>'
         f'<nav class="nav-desktop" aria-label="Main"><ul class="nav-list">{links}</ul></nav>'
         '<p class="preview-tag">Early preview<span class="sr-only">. Some tools are live and some are still being built. Each tool says which.</span></p>'
@@ -117,6 +117,10 @@ def card_html(t: dict, level: str = "h3") -> str:
             f'<p>{E(t["tagline"])}</p>'
             f'<p class="tool-meta">{E(t["category"])}</p>'
             f'<a href="{url}" class="btn btn-secondary">Open</a></article>')
+
+
+def shelf_html(tools: list[dict]) -> str:
+    return '<div class="tool-grid">' + "".join(card_html(t) for t in tools) + "</div>"
 
 
 def workbench_list(tools: list[dict]) -> str:
@@ -246,13 +250,8 @@ def build() -> dict[Path, str]:
         text = replace_block(text, "header", header(current))
         text = replace_block(text, "footer", FOOTER)
         if name == "index.html":
-            # QuickQuote is the home page's one door, so it is not repeated here.
-            ready = [t for t in tools if t["status"] != "workbench" and t["slug"] != "quickquote"]
-            bench = [t for t in tools if t["status"] == "workbench"]
-            featured = (f'<div class="tool-grid">{"".join(card_html(t) for t in ready)}</div>'
-                        if ready else '<p class="muted">The other tools are on the workbench.</p>')
-            text = replace_block(text, "featured", featured)
-            text = replace_block(text, "workbench", workbench_list(bench))
+            # One shelf, real status chips, QuickQuote included once.
+            text = replace_block(text, "shelf", shelf_html(tools))
         out[path] = text
 
     urls = ["/", "/tools/", "/how-it-works.html", "/list-your-tool.html", "/contact.html"]
