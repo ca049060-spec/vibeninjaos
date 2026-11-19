@@ -82,7 +82,6 @@ def header(current: str) -> str:
         '  <header class="site-header"><div class="container nav-row">'
         f'<a href="/" class="brand">{MARK}<span class="brand-text">VibeNinja<span class="brand-os">OS</span></span></a>'
         f'<nav class="nav-desktop" aria-label="Main"><ul class="nav-list">{links}</ul></nav>'
-        '<p class="preview-tag">Early preview<span class="sr-only">. Some tools are live and some are still being built. Each tool says which.</span></p>'
         '<details class="nav-details"><summary class="nav-toggle">'
         '<span class="nav-open-label">Menu</span><span class="nav-close-label">Close</span></summary>'
         f'<nav aria-label="Main"><ul class="nav-list">{links}</ul></nav>'
@@ -251,8 +250,11 @@ def build() -> dict[Path, str]:
             bench = [t for t in tools if t["status"] == "workbench"]
             featured = (f'<div class="tool-grid">{"".join(card_html(t) for t in ready)}</div>'
                         if ready else '<p class="muted">The other tools are on the workbench.</p>')
-            text = replace_block(text, "featured", featured)
-            text = replace_block(text, "workbench", workbench_list(bench))
+            # The home page now leads with QuickQuote alone; the blocks fill only if their markers return.
+            if "<!-- site:featured -->" in text:
+                text = replace_block(text, "featured", featured)
+            if "<!-- site:workbench -->" in text:
+                text = replace_block(text, "workbench", workbench_list(bench))
         out[path] = text
 
     urls = ["/", "/tools/", "/how-it-works.html", "/list-your-tool.html", "/contact.html"]
