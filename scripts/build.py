@@ -47,14 +47,17 @@ NAV = [
 ]
 
 MARK = ('<svg class="mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">'
-        '<rect width="32" height="32" rx="8" fill="#EA580C"/>'
-        '<path fill="#0F172A" d="M16 4.5 18.7 13.3 27.5 16 18.7 18.7 16 27.5 13.3 18.7 4.5 16 13.3 13.3Z"/>'
+        '<rect width="32" height="32" rx="9" fill="#63E6C2"/>'
+        '<path fill="#10243A" d="M16 4.5 19.3 12.7 27.5 16 19.3 19.3 16 27.5 12.7 19.3 4.5 16 12.7 12.7Z"/>'
+        '<circle cx="16" cy="16" r="2.2" fill="#FF795B"/>'
         '</svg>')
 
 HEAD = """
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
-  <meta name="theme-color" content="#0F172A">
+  <link rel="apple-touch-icon" href="/assets/brand/app-icon-192.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#10243A">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&display=swap">
@@ -69,6 +72,24 @@ FOOTER = ('<footer class="site-footer"><div class="container footer-inner">'
           '</div></footer>')
 
 E = html.escape
+
+
+TOOL_ICONS = {
+    "quickquote": '<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h2m4 0h.01M9 16h2m4 0h.01M22 9l2 2 4-4"/>',
+    "local-market-report": '<path d="M4 23V5m0 18h24"/><path d="M8 19v-5h4v5m3 0V9h4v10m3 0V4h4v15"/>',
+    "autovibe": '<path d="m5 17 2-7h14l3 7"/><path d="M4 17h20v5h-3v-2H7v2H4zM8 10l2-4h8l3 4M8 15h.01M20 15h.01"/>',
+    "campusvibe": '<path d="M16 6c-4-3-8-2-12 0v17c4-2 8-3 12 0m0-17c4-3 8-2 12 0v17c-4-2-8-3-12 0zm0 0v17"/>',
+    "realestate-os": '<path d="m4 13 12-9 12 9"/><path d="M7 11v13h18V11M13 24v-8h6v8"/>',
+    "builder-kit": '<rect x="4" y="9" width="24" height="15" rx="2"/><path d="M11 9V5h10v4m-17 5h24m-15 0v3h6v-3"/>',
+    "smb-onboarding": '<rect x="5" y="4" width="20" height="24" rx="2"/><path d="m9 11 2 2 3-4m2 3h5m-12 7 2 2 3-4m2 3h5"/>',
+}
+
+
+def tool_icon(t: dict) -> str:
+    paths = TOOL_ICONS.get(t["slug"], '<path d="M16 3 19 13l10 3-10 3-3 10-3-10-10-3 10-3z"/>')
+    return (f'<span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 32 32" '
+            f'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+            f'stroke-linejoin="round">{paths}</svg></span>')
 
 
 def header(current: str) -> str:
@@ -112,7 +133,7 @@ def badge(t: dict) -> str:
 
 def card_html(t: dict, level: str = "h3") -> str:
     url = f"/tools/{t['slug']}/"
-    return (f'<article class="card tool-card">{badge(t)}'
+    return (f'<article class="card tool-card">{tool_icon(t)}{badge(t)}'
             f'<{level}><a href="{url}">{E(t["name"])}</a></{level}>'
             f'<p>{E(t["tagline"])}</p>'
             f'<p class="tool-meta">{E(t["category"])}</p>'
@@ -126,7 +147,18 @@ def workbench_list(tools: list[dict]) -> str:
     return f'<ul class="workbench-list">{rows}</ul>'
 
 
-def page(title: str, description: str, path: str, current: str, body: str) -> str:
+def page(title: str, description: str, path: str, current: str, body: str,
+         social_image: str = "") -> str:
+    social = (f'  <meta property="og:type" content="website">\n'
+              f'  <meta property="og:title" content="{E(title)}">\n'
+              f'  <meta property="og:description" content="{E(description)}">\n'
+              f'  <meta property="og:url" content="{SITE_URL}{path}">\n'
+              f'  <meta property="og:image" content="{SITE_URL}{social_image}">\n'
+              f'  <meta property="og:image:alt" content="VibeNinjaOS practical tools for Canadian small business">\n'
+              f'  <meta property="og:image:width" content="1200">\n'
+              f'  <meta property="og:image:height" content="630">\n'
+              f'  <meta name="twitter:card" content="summary_large_image">\n'
+              if social_image else "")
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -135,7 +167,7 @@ def page(title: str, description: str, path: str, current: str, body: str) -> st
   <title>{E(title)}</title>
   <meta name="description" content="{E(description)}">
   <link rel="canonical" href="{SITE_URL}{path}">
-  <!-- site:head -->{HEAD}<!-- /site:head -->
+{social}  <!-- site:head -->{HEAD}<!-- /site:head -->
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -162,6 +194,7 @@ def tool_page(t: dict) -> str:
     primary = "btn-primary" if t["status"] != "workbench" else "btn-secondary"
     body = f"""    <section class="page-intro tool-intro">
       <p class="eyebrow"><a href="/tools/">Tools</a> / {E(t["category"])}</p>
+      {tool_icon(t)}
       {badge(t)}
       <h1>{E(t["name"])}</h1>
       <p class="lead">{E(t["tagline"])}</p>
@@ -212,8 +245,8 @@ def catalog(tools: list[dict]) -> str:
       <p>We are starting a shelf for tools made by other builders.</p>
       <a href="/list-your-tool.html" class="btn btn-primary">List your tool</a>
     </section>"""
-    return page("Tools | VibeNinjaOS", "Working tools for small businesses, built with AI. Try the live ones free.",
-                "/tools/", "/tools/", body)
+    return page("Tools | VibeNinjaOS", "Practical tools for Canadian small business: quoting, bookkeeping, GST/HST, invoicing and expenses.",
+                "/tools/", "/tools/", body, "/assets/social/tools.png")
 
 
 ROOT_PAGES = {

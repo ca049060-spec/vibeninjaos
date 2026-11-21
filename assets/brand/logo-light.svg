@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 72" role="img" aria-labelledby="title">
+  <title id="title">VibeNinjaOS</title>
+  <rect x="2" y="4" width="64" height="64" rx="18" fill="#63E6C2"/>
+  <path fill="#10243A" d="m34 12 7 17 17 7-17 7-7 17-7-17-17-7 17-7z"/>
+  <circle cx="34" cy="36" r="4" fill="#FF795B"/>
+  <text x="82" y="49" fill="#10243A" font-family="Plus Jakarta Sans,Arial,sans-serif" font-size="38" font-weight="800" letter-spacing="-1.7">VibeNinja</text>
+  <text x="248" y="49" fill="#bd452e" font-family="Plus Jakarta Sans,Arial,sans-serif" font-size="38" font-weight="800" letter-spacing="-1.7">OS</text>
+</svg>
