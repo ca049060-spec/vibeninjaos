@@ -24,6 +24,8 @@ python scripts/build.py --check                   # exit 1 if any page is out of
 
 The shared head links, header and footer live in `scripts/build.py` and are written into every page between the `<!-- site:head -->`, `<!-- site:header -->` and `<!-- site:footer -->` markers. Edit them there, not in the pages. The home page leads with QuickQuote, so the generated block of other tools leaves QuickQuote out. Standard library Python only; Netlify runs no build step, the output is committed.
 
+Plus Jakarta Sans is self-hosted from `/fonts`, with `@font-face` rules in `styles.css` and the license in `fonts/OFL.txt`. The shared head must not link to Google Fonts or any other font host. A font host request would send the visitor's IP address off this site.
+
 ## Status
 
 - Started 2026-11-05 from Shawn's prototype in Google Drive (`VIBENINJA_ENTERPRISE_OS_ROOT`).
