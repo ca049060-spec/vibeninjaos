@@ -61,7 +61,7 @@ HEAD = """
   """
 
 FOOTER = ('<footer class="site-footer"><div class="container footer-inner">'
-          '<p>VibeNinjaOS (vibeninjaos.app): working tools, built with AI.</p>'
+          '<p>VibeNinjaOS (vibeninjaos.app)</p>'
           '<nav aria-label="Footer"><a href="/tools/">All tools</a>'
           '<a href="/how-it-works.html">How it works</a>'
           '<a href="/list-your-tool.html">List your tool</a>'
