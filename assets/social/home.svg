@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#10243A"/>
+  <circle cx="1040" cy="100" r="285" fill="#18374E"/>
+  <circle cx="1040" cy="100" r="195" fill="#1D4656"/>
+  <rect x="72" y="66" width="52" height="52" rx="15" fill="#63E6C2"/>
+  <path fill="#10243A" d="m98 75 6 14 14 6-14 6-6 14-6-14-14-6 14-6z"/>
+  <circle cx="98" cy="95" r="3.5" fill="#FF795B"/>
+  <text x="145" y="102" fill="#E8FAF3" font-family="Arial,sans-serif" font-size="25" font-weight="700" letter-spacing="2">VIBENINJAOS  ·  CANADA</text>
+  <text x="72" y="244" fill="#ffffff" font-family="Arial,sans-serif" font-size="66" font-weight="700">Useful tools for</text>
+  <text x="72" y="322" fill="#ffffff" font-family="Arial,sans-serif" font-size="66" font-weight="700">small business.</text>
+  <text x="72" y="379" fill="#C5D8DB" font-family="Arial,sans-serif" font-size="27">Practical help for the work behind the work.</text>
+  <g font-family="Arial,sans-serif" font-size="20" font-weight="700">
+    <rect x="72" y="437" width="164" height="49" rx="24" fill="#194358" stroke="#63E6C2"/><text x="99" y="469" fill="#E8FAF3">Bookkeeping</text>
+    <rect x="249" y="437" width="139" height="49" rx="24" fill="#194358" stroke="#63E6C2"/><text x="278" y="469" fill="#E8FAF3">Quoting</text>
+    <rect x="401" y="437" width="145" height="49" rx="24" fill="#194358" stroke="#63E6C2"/><text x="430" y="469" fill="#E8FAF3">GST / HST</text>
+    <rect x="559" y="437" width="146" height="49" rx="24" fill="#194358" stroke="#63E6C2"/><text x="587" y="469" fill="#E8FAF3">Invoicing</text>
+    <rect x="718" y="437" width="154" height="49" rx="24" fill="#194358" stroke="#63E6C2"/><text x="748" y="469" fill="#E8FAF3">Expenses</text>
+  </g>
+  <rect x="939" y="330" width="180" height="180" rx="36" fill="#63E6C2"/>
+  <path fill="#10243A" d="m1029 359 24 48 48 24-48 24-24 48-24-48-48-24 48-24z"/>
+  <circle cx="1029" cy="431" r="12" fill="#FF795B"/>
+  <text x="72" y="572" fill="#A7BDC8" font-family="Arial,sans-serif" font-size="19">QuickQuote is live. More straightforward tools are on the way.</text>
+</svg>
