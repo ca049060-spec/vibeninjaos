@@ -702,6 +702,20 @@ main a:not(.btn) { color: var(--blue); }
   border-bottom: 3px solid var(--navy);
 }
 
+.advisory-card { margin: 0 0 1.25rem; max-width: 28rem; }
+
+@media (max-width: 699px) {
+  .hero { padding: 1.35rem 0 0.85rem; }
+  .hero h1 { font-size: 2rem; margin-bottom: 0.65rem; }
+  .hero .kicker { margin-bottom: 0.5rem; gap: 0.35rem; }
+  .hero .lede { font-size: 1rem; line-height: 1.4; margin-bottom: 0.8rem; }
+  #jobs { padding: 1rem 0 1.25rem; }
+  #jobs .kicker { margin-bottom: 0.45rem; }
+  #jobs h2 { margin-bottom: 0.35rem; font-size: 1.65rem; }
+  #jobs .section-lead { margin-bottom: 0.75rem; font-size: 1rem; }
+  #jobs .tool-card { padding: 0.9rem 1rem; gap: 0.35rem; }
+}
+
 .cta-band p { color: #e2e8f0; font-size: 1.2rem; }
 
 .cta-banner {

@@ -257,9 +257,8 @@ def build() -> dict[Path, str]:
         text = replace_block(text, "header", header(current))
         text = replace_block(text, "footer", FOOTER)
         if name == "index.html":
-            # Jobs are tools that work on main: live, or done by request.
-            # Workbench tools stay in the later list.
-            ready = [t for t in tools if t["status"] != "workbench"]
+            # The job row is live tools. By-request work, such as the Local Market Report, stays in the advisory section.
+            ready = [t for t in tools if t["status"] == "live"]
             bench = [t for t in tools if t["status"] == "workbench"]
             jobs = (f'<div class="tool-grid">{"".join(job_card(t) for t in ready)}</div>'
                     if ready else '<p class="muted">Jobs will show here when a tool works today.</p>')
