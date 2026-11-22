@@ -3,7 +3,7 @@
   "tagline": "Work out GST, HST and provincial sales tax for a sale in any province.",
   "slug": "gst-hst",
   "order": 3,
-  "status": "live",
+  "status": "preview",
   "category": "Books & tax",
   "audience": "Canadian small businesses that charge sales tax",
   "before": "The rate depends on the province, and the provincial tax is easy to mix up with the HST. A wrong rate on an invoice is a mess to fix later.",
@@ -11,9 +11,9 @@
   "try_url": "/tools/gst-hst/app/",
   "try_label": "Open the calculator",
   "price_note": "Free to use.",
-  "privacy_note": "The amount you type stays in your browser. Nothing is sent to us.",
+  "privacy_note": "What you type is on this page while it is open.",
   "origin": "Rates are the general rates on the Canada Revenue Agency GST/HST calculator page, in effect on or after 1 April 2025. Checked 12 November 2026.",
-  "built_with": "One web page. No account and no server.",
+  "built_with": "One web page.",
   "repo": "",
-  "updated": "2026-11-12"
+  "updated": "2026-11-22"
 }

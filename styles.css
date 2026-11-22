@@ -455,6 +455,11 @@ main a:not(.btn) {
   border-color: var(--border);
 }
 
+.status-preview {
+  color: var(--banner-text);
+  border-color: var(--banner-border);
+}
+
 .tool-intro .status { margin-bottom: 0.75rem; }
 
 .status-help {
