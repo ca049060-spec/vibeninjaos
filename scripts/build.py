@@ -48,12 +48,8 @@ NAV = [
     ("/contact.html", "Contact"),
 ]
 
-BANNER = ('<div class="construction-banner" role="status">'
-          '<strong>Early preview.</strong> Some tools are live and some are still being built. '
-          'Each tool says which.</div>')
-
 FOOTER = ('<footer class="site-footer"><div class="container">'
-          '<p>VibeNinjaOS (vibeninjaos.app): working tools, built with AI. '
+          '<p>VibeNinjaOS is a shelf of small business tools. '
           '<a href="/tools/">All tools</a> · <a href="/list-your-tool.html">List your tool</a> · '
           '<a href="/contact.html">Contact</a></p></div></footer>')
 
@@ -65,10 +61,17 @@ def header(current: str) -> str:
     for href, label in NAV:
         here = ' aria-current="page"' if href == current else ""
         items.append(f'<li><a href="{href}"{here}>{label}</a></li>')
-    return (f"{BANNER}\n  <header class=\"site-header\"><div class=\"container nav-row\">"
-            f"<a href=\"/\" class=\"brand\">🥷 VibeNinjaOS</a>"
-            f"<nav aria-label=\"Main navigation\"><ul class=\"nav-list\">{''.join(items)}</ul></nav>"
-            f"</div></header>")
+    links = "".join(items)
+    return (
+        '<a class="skip-link" href="#content">Skip to content</a>\n'
+        '  <header class="site-header"><div class="container nav-row">'
+        '<a href="/" class="brand"><span class="mark" aria-hidden="true"></span>VibeNinjaOS</a>'
+        f'<nav class="nav-desktop" aria-label="Main navigation"><ul class="nav-list">{links}</ul></nav>'
+        '<p class="preview-tag">Early preview</p>'
+        '<details class="nav-details"><summary class="nav-toggle">Menu</summary>'
+        f'<nav aria-label="Main navigation"><ul class="nav-list">{links}</ul></nav></details>'
+        "</div></header>"
+    )
 
 
 def load_tools() -> list[dict]:
@@ -121,7 +124,7 @@ def page(title: str, description: str, path: str, current: str, body: str) -> st
 <body>
   <!-- site:header -->{header(current)}<!-- /site:header -->
 
-  <main class="container">
+  <main id="content" class="container">
 {body}
   </main>
 
