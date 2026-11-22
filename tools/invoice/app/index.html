@@ -183,7 +183,7 @@
     <section class="card">
       <h2>Note on the invoice</h2>
       <textarea id="notes" placeholder="Payment instructions or a thank-you. Optional."></textarea>
-      <p class="hint" id="save-state">Saved in this browser only.</p>
+      <p class="hint" id="save-state">Saved in this browser.</p>
     </section>
   </form>
 
@@ -215,7 +215,7 @@
   <button type="button" class="secondary" id="new-invoice">New invoice</button>
   <button type="button" class="primary" id="print">Print or save PDF</button>
 </div>
-<noscript class="no-print"><p>This page needs JavaScript. The invoice stays in your browser.</p></noscript>
+<noscript class="no-print"><p>This page needs JavaScript. If your browser can store data, the invoice is kept in this browser until you clear the site data, use a private window, or switch phones.</p></noscript>
 <script>
 /* calc:start */
 const DEN = 100000;
@@ -549,7 +549,7 @@ function persist() {
   const data = snapshot();
   try {
     localStorage.setItem(KEY, JSON.stringify(data));
-    $("save-state").textContent = "Saved in this browser. Nothing is sent to us.";
+    $("save-state").textContent = "Saved in this browser.";
   } catch (err) {
     $("save-state").textContent = "This browser did not store the invoice. It remains on the page until you leave.";
   }
