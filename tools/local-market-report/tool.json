@@ -1,5 +1,6 @@
 {
   "name": "Local Market Report",
+  "job": "Ask about a local market",
   "tagline": "Ask a business question about a Canadian town. Get the answer from Statistics Canada, with the source on every number.",
   "slug": "local-market-report",
   "order": 2,

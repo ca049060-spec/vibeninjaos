@@ -5,7 +5,7 @@ This script reads every card and writes:
 
   tools/<slug>/index.html   the tool's own page
   tools/index.html          the catalog of all tools
-  index.html                the featured and workbench blocks on the home page
+  index.html                the pick-your-job and workbench blocks on the home page
   every page                the shared head links, header and footer
   sitemap.xml               every public page
 
@@ -108,6 +108,17 @@ def load_tools() -> list[dict]:
 def badge(t: dict) -> str:
     label = STATUS[t["status"]][0]
     return f'<span class="status status-{t["status"]}">{label}</span>'
+
+
+def job_card(t: dict) -> str:
+    """Home-page job card. The visitor's job comes before the tool name."""
+    url = f"/tools/{t['slug']}/"
+    job = str(t.get("job") or "").strip() or t["tagline"]
+    return (f'<article class="card tool-card">{badge(t)}'
+            f'<h3><a href="{url}">{E(job)}</a></h3>'
+            f'<p>{E(t["name"])}. {E(t["tagline"])}</p>'
+            f'<p class="tool-meta">{E(STATUS[t["status"]][1])}</p>'
+            f'<a href="{url}" class="btn btn-secondary">Open</a></article>')
 
 
 def card_html(t: dict, level: str = "h3") -> str:
@@ -246,12 +257,13 @@ def build() -> dict[Path, str]:
         text = replace_block(text, "header", header(current))
         text = replace_block(text, "footer", FOOTER)
         if name == "index.html":
-            # QuickQuote is the home page's one door, so it is not repeated here.
-            ready = [t for t in tools if t["status"] != "workbench" and t["slug"] != "quickquote"]
+            # Jobs are tools that work on main: live, or done by request.
+            # Workbench tools stay in the later list.
+            ready = [t for t in tools if t["status"] != "workbench"]
             bench = [t for t in tools if t["status"] == "workbench"]
-            featured = (f'<div class="tool-grid">{"".join(card_html(t) for t in ready)}</div>'
-                        if ready else '<p class="muted">The other tools are on the workbench.</p>')
-            text = replace_block(text, "featured", featured)
+            jobs = (f'<div class="tool-grid">{"".join(job_card(t) for t in ready)}</div>'
+                    if ready else '<p class="muted">Jobs will show here when a tool works today.</p>')
+            text = replace_block(text, "jobs", jobs)
             text = replace_block(text, "workbench", workbench_list(bench))
         out[path] = text
 

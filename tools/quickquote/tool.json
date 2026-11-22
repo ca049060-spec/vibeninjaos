@@ -1,5 +1,6 @@
 {
   "name": "QuickQuote",
+  "job": "Quote a job on site",
   "tagline": "Price a driveway job on your phone, in the driveway.",
   "slug": "quickquote",
   "order": 1,
