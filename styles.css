@@ -815,12 +815,22 @@ main.container { padding-top: 2.5rem; padding-bottom: 3rem; }
 }
 
 @media (min-width: 900px) {
+  .hero { padding: 2.5rem 0; }
+
   .hero-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(15rem, 0.85fr);
     gap: 2.5rem;
     align-items: center;
   }
+
+  .qq-hero { display: block; }
+
+  .qq-hero figcaption { color: var(--muted-dark); }
+
+  .qq-below { display: none; }
+
+  .band-does .split { display: block; }
 
   .split { grid-template-columns: 1.05fr 0.95fr; gap: 4rem; }
   .steps, .grid-3 { grid-template-columns: repeat(3, 1fr); }
