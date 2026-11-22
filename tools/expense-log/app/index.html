@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0e1929">
 <title>Expense &amp; Mileage Log</title>
-<meta name="description" content="Log small-business expenses and kilometres in the browser, then download a CSV. Data stays on this device.">
+<meta name="description" content="Log small-business expenses and kilometres, then download a CSV for your bookkeeper or save a copy of the whole log.">
 <style>
   :root {
     --gold: #f5a623;
@@ -31,12 +31,13 @@
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
   }
   .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .brand > div:last-child { min-width: 0; }
   .mark {
     width: 36px; height: 36px; border-radius: 9px; background: var(--gold); color: var(--navy-deep);
     font-weight: 800; font-size: 0.68rem; display: flex; align-items: center; justify-content: center; flex: none;
   }
   header h1 { font-size: 1.02rem; margin: 0; }
-  header p { margin: 0; color: rgba(255,255,255,0.7); font-size: 0.8rem; }
+  header p { margin: 0; color: rgba(255,255,255,0.7); font-size: 0.8rem; overflow-wrap: anywhere; }
   header a { color: #fff; font-weight: 700; text-decoration: none; font-size: 0.85rem; }
   .wrap { max-width: 640px; margin: 0 auto; padding: 16px 16px 32px; }
   .card {
@@ -78,10 +79,24 @@
   .amt { white-space: nowrap; font-variant-numeric: tabular-nums; }
   .meta { color: var(--muted); font-size: 0.85rem; margin: 4px 0; }
   .entry-actions { display: flex; gap: 8px; }
-  .tiny { min-height: 40px; padding: 0 12px; background: #fff; }
+  .tiny { min-height: 48px; padding: 0 12px; background: #fff; }
   .tiny.warn { color: #9f1239; }
   .tools { display: flex; gap: 8px; flex-wrap: wrap; }
-  .tools button, .tools a { flex: 1; min-width: 140px; text-align: center; text-decoration: none; }
+  .tools button, .tools a { flex: 1 1 140px; min-width: 0; max-width: 100%; text-align: center; text-decoration: none; white-space: normal; line-height: 1.25; padding: 12px; }
+  .banner {
+    background: #fff7e8; border: 1.5px solid #e8c27a; border-radius: 12px; padding: 12px; margin-top: 12px;
+  }
+  .banner p { margin: 0; overflow-wrap: anywhere; }
+  .banner button { width: 100%; margin-top: 8px; }
+  .import-choice { margin-top: 12px; }
+  .import-choice p { margin: 0 0 8px; overflow-wrap: anywhere; }
+  .stack { display: flex; flex-direction: column; gap: 8px; }
+  .stack button { width: 100%; white-space: normal; line-height: 1.25; padding: 12px; }
+  #open-file {
+    position: fixed; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; overflow: hidden;
+  }
+  .hint, .banner, .import-choice { overflow-wrap: anywhere; }
+  .warn { color: #9f1239; }
   @media (max-width: 380px) {
     .row2 { grid-template-columns: 1fr; }
   }
@@ -93,7 +108,7 @@
     <div class="mark" aria-hidden="true">LOG</div>
     <div>
       <h1>Expense &amp; Mileage Log</h1>
-      <p>On this device only</p>
+      <p>Log a receipt or a trip, then save a copy</p>
     </div>
   </div>
   <a href="/tools/expense-log/">About</a>
@@ -160,22 +175,50 @@
     <div class="sums" id="sums" style="margin-top:12px"></div>
     <ul class="entries" id="list"></ul>
     <p class="hint" id="empty">No entries for this period.</p>
+    <div id="copy-banner" class="banner" role="status" hidden>
+      <p id="copy-banner-text"></p>
+      <button type="button" class="secondary" id="banner-save">Save a copy</button>
+    </div>
     <div class="tools">
       <button type="button" class="secondary" id="export">Download CSV of this list</button>
-      <button type="button" class="secondary tiny warn" id="clear">Clear all</button>
+      <button type="button" class="secondary" id="save-copy">Save a copy of the whole log</button>
+      <button type="button" class="secondary" id="open-copy">Open a saved copy</button>
+      <button type="button" class="secondary warn" id="clear">Clear all</button>
     </div>
-    <p class="hint" id="store-note">Entries stay in this browser. Download a CSV if you want a copy your bookkeeper can open.</p>
+    <input id="open-file" type="file" accept=".json,.csv,application/json,text/csv" tabindex="-1" aria-hidden="true">
+    <div id="import-choice" class="import-choice" hidden>
+      <p id="import-choice-text">This phone already has entries.</p>
+      <div class="stack">
+        <button type="button" class="secondary" id="import-add">Add to the list already on this phone</button>
+        <button type="button" class="secondary" id="import-replace">Replace the list on this phone with this file</button>
+        <button type="button" class="secondary" id="import-cancel">Cancel</button>
+      </div>
+    </div>
+    <p class="hint" id="import-note" role="status" hidden></p>
+    <p class="hint" id="store-note" role="status">This browser can keep the list until you clear the site data, use a private or incognito window, or switch phones. Save a copy of the whole log if you want a file you can open later. The CSV is for your bookkeeper, and it only includes the dates in the filter above.</p>
   </section>
 </div>
-<noscript><p>This log needs JavaScript. Entries are stored in this browser and are not sent to a server.</p></noscript>
+<noscript><p>This log needs JavaScript. If your browser can store data, the list is kept in this browser until you clear the site data, use a private window, or switch phones.</p></noscript>
 <script>
 const KEY = "vibeninjaos.expense-log.v1";
+const FORMAT = "vibeninjaos.expense-log.v1";
+const CSV_HEADER = ["date","kind","category","payee","description","from","to","amount_cad","kilometres","rate_per_km_cad","mileage_amount_cad","note"];
 const CATEGORIES = ["Supplies","Meals","Travel","Office","Vehicle","Subcontractor","Fees","Other"];
+const NOTE_OK = "This browser can keep the list until you clear the site data, use a private or incognito window, or switch phones. Save a copy of the whole log if you want a file you can open later. The CSV is for your bookkeeper, and it only includes the dates in the filter above.";
+const NOTE_FAIL = "This browser is not keeping the list. It will be gone when you close this page. Save a copy now, or use a regular (not private) window.";
+const COPY_OVERDUE = "This list is only in this browser right now. Save a copy so you can open it again if you clear the site data, use a private window, or switch phones.";
+const COPY_SAVED_TODAY = "Last copy saved today. Save a new copy after you add more entries, and keep that file somewhere you can find, such as Files or email.";
+const INVALID_FILE = "That file is not a copy this log can open. Use a file saved from this page as a copy of the whole log, or a CSV downloaded from this page.";
+const REPLACE_CONFIRM = "Replace every entry in this browser with this file? The list that is here now will be gone, unless you already saved a copy.";
+const CLEAR_CONFIRM = "Delete every entry in this log? This cannot be undone from this page. A file you already saved is not deleted.";
 const $ = (id) => document.getElementById(id);
 let entries = [];
 let filter = "month";
 let editing = null;
 let kind = "expense";
+let lastFullCopyAt = null;
+let lastFullCopySig = null;
+let pendingFileEntries = null;
 
 function todayISO() {
   const now = new Date();
@@ -252,13 +295,96 @@ function visibleEntries() {
     return entry.date.slice(0, 7) === today.slice(0, 7);
   });
 }
+function listSig(list) {
+  return JSON.stringify(list);
+}
+function copyIsCurrent() {
+  return typeof lastFullCopyAt === "string" && lastFullCopyAt.length > 0 && lastFullCopySig === listSig(entries);
+}
+function savedCopyLine(iso) {
+  const when = new Date(iso);
+  const now = new Date();
+  if (when.getFullYear() === now.getFullYear() && when.getMonth() === now.getMonth() && when.getDate() === now.getDate()) {
+    return COPY_SAVED_TODAY;
+  }
+  return "Last copy saved " + when.toLocaleDateString() + ". Save a new copy after you add more entries, and keep that file somewhere you can find, such as Files or email.";
+}
+function setStoreNote(failed) {
+  const el = $("store-note");
+  el.textContent = failed ? NOTE_FAIL : NOTE_OK;
+  el.classList.toggle("err", failed);
+}
+function updateReminder() {
+  const banner = $("copy-banner");
+  if (!entries.length) {
+    banner.hidden = true;
+    hideChoice();
+    return;
+  }
+  banner.hidden = false;
+  if (copyIsCurrent()) {
+    $("banner-save").hidden = true;
+    $("copy-banner-text").textContent = savedCopyLine(lastFullCopyAt);
+  } else {
+    $("banner-save").hidden = false;
+    $("copy-banner-text").textContent = COPY_OVERDUE;
+  }
+}
 function saveStore() {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ entries }));
-    $("store-note").textContent = "Entries stay in this browser. Download a CSV if you want a copy your bookkeeper can open.";
+    const payload = { entries };
+    if (lastFullCopyAt) {
+      payload.lastFullCopyAt = lastFullCopyAt;
+      payload.lastFullCopySig = lastFullCopySig;
+    }
+    localStorage.setItem(KEY, JSON.stringify(payload));
+    setStoreNote(false);
   } catch (err) {
-    $("store-note").textContent = "This browser did not store the log. Download a CSV before you leave the page.";
+    setStoreNote(true);
   }
+  updateReminder();
+}
+function storageProbe() {
+  const probeKey = KEY + ".probe";
+  try {
+    localStorage.setItem(probeKey, "1");
+    localStorage.removeItem(probeKey);
+    return true;
+  } catch (err) {
+    try { localStorage.removeItem(probeKey); } catch (ignore) {}
+    return false;
+  }
+}
+function showImport(message) {
+  const el = $("import-note");
+  el.hidden = !message;
+  el.textContent = message || "";
+}
+function hideChoice() {
+  pendingFileEntries = null;
+  $("import-choice").hidden = true;
+}
+function showAllIfNeeded(batch) {
+  const today = todayISO();
+  const hidden = batch.some((entry) => {
+    if (filter === "all") return false;
+    if (!entry.date) return true;
+    if (filter === "year") return entry.date.slice(0, 4) !== today.slice(0, 4);
+    return entry.date.slice(0, 7) !== today.slice(0, 7);
+  });
+  if (!hidden) return;
+  filter = "all";
+  document.querySelectorAll("[data-filter]").forEach((item) => item.setAttribute("aria-pressed", String(item.dataset.filter === "all")));
+}
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 function render() {
   const shown = visibleEntries().slice().sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.created || "").localeCompare(a.created || ""));
@@ -390,7 +516,7 @@ function csvText(value) {
 }
 function downloadCsv() {
   const shown = visibleEntries().slice().sort((a, b) => (a.date || "").localeCompare(b.date || ""));
-  const header = ["date","kind","category","payee","description","from","to","amount_cad","kilometres","rate_per_km_cad","mileage_amount_cad","note"];
+  const header = CSV_HEADER;
   const rows = shown.map((entry) => {
     const trip = entry.kind === "trip";
     const mileage = trip && entry.rate != null ? centsToPlain(mileageCents(entry.km, entry.rate)) : "";
@@ -411,15 +537,152 @@ function downloadCsv() {
     return cells.join(",");
   });
   const csv = "\uFEFF" + header.join(",") + "\r\n" + rows.join("\r\n") + (rows.length ? "\r\n" : "");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "expense-mileage-log.csv";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  downloadBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), "expense-mileage-log.csv");
+}
+function downloadFullCopy() {
+  const exportedAt = new Date().toISOString();
+  const body = JSON.stringify({ format: FORMAT, exported_at: exportedAt, entries }, null, 2) + "\n";
+  downloadBlob(new Blob([body], { type: "application/json" }), "expense-mileage-log-copy.json");
+  lastFullCopyAt = exportedAt;
+  lastFullCopySig = listSig(entries);
+  saveStore();
+}
+function isValidEntry(entry) {
+  return !!entry && (entry.kind === "expense" || entry.kind === "trip") && typeof entry.id === "string";
+}
+function entriesFromJson(text) {
+  let data;
+  try { data = JSON.parse(text); } catch (err) { return null; }
+  if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+  if (!Array.isArray(data.entries)) return null;
+  if (data.format != null && data.format !== FORMAT) return null;
+  return data.entries.filter(isValidEntry).map((entry) => JSON.parse(JSON.stringify(entry)));
+}
+function parseCsvTable(text) {
+  const src = String(text).replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quoted = false;
+  for (let i = 0; i < src.length; i++) {
+    const ch = src[i];
+    if (quoted) {
+      if (ch === '"') {
+        if (src[i + 1] === '"') { cell += '"'; i += 1; }
+        else quoted = false;
+      } else cell += ch;
+    } else if (ch === '"') quoted = true;
+    else if (ch === ",") { row.push(cell); cell = ""; }
+    else if (ch === "\n") { row.push(cell); rows.push(row); row = []; cell = ""; }
+    else cell += ch;
+  }
+  if (cell.length || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+function unprefix(value) {
+  const text = value == null ? "" : String(value);
+  if (text.charAt(0) === "'" && /^[=+\-@\t\r]/.test(text.slice(1))) return text.slice(1);
+  return text;
+}
+function validDate(iso) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+}
+function entriesFromCsv(text) {
+  const table = parseCsvTable(text);
+  if (!table.length) return null;
+  const header = table[0].map((cell) => cell.trim());
+  if (header.length !== CSV_HEADER.length || header.some((cell, index) => cell !== CSV_HEADER[index])) return null;
+  const parsed = [];
+  let skipped = 0;
+  table.slice(1).forEach((row) => {
+    if (row.every((cell) => String(cell).trim() === "")) return;
+    if (row.length !== CSV_HEADER.length) { skipped += 1; return; }
+    const date = unprefix(row[0]).trim();
+    const rowKind = unprefix(row[1]).trim();
+    const category = unprefix(row[2]).trim();
+    const payee = unprefix(row[3]).trim();
+    const description = unprefix(row[4]).trim();
+    const from = unprefix(row[5]).trim();
+    const to = unprefix(row[6]).trim();
+    const note = unprefix(row[11]).trim();
+    if (!validDate(date) || (rowKind !== "expense" && rowKind !== "trip")) { skipped += 1; return; }
+    if (rowKind === "expense") {
+      const amount = parseMoney(row[7]);
+      if (amount == null) { skipped += 1; return; }
+      parsed.push({ kind: "expense", date, category, payee, description, amount, note, id: uid(), created: new Date().toISOString() });
+      return;
+    }
+    const km = parseKm(row[8]);
+    if (km == null) { skipped += 1; return; }
+    let rate = null;
+    if (String(row[9]).trim()) {
+      rate = parseMoney(row[9]);
+      if (rate == null || rate <= 0 || !Number.isSafeInteger(km * rate)) { skipped += 1; return; }
+    }
+    parsed.push({ kind: "trip", date, description, from, to, km, rate, note, id: uid(), created: new Date().toISOString() });
+  });
+  return { entries: parsed, skipped };
+}
+function applyAdd(batch) {
+  const have = new Set(entries.map((entry) => entry.id));
+  const addedEntries = [];
+  batch.forEach((entry) => {
+    if (have.has(entry.id)) return;
+    have.add(entry.id);
+    entries.push(entry);
+    addedEntries.push(entry);
+  });
+  showAllIfNeeded(addedEntries);
+  saveStore();
+  render();
+  hideChoice();
+  showImport("Added " + addedEntries.length + " entries from the file.");
+}
+function applyCsv(batch, skipped) {
+  batch.forEach((entry) => entries.push(entry));
+  showAllIfNeeded(batch);
+  saveStore();
+  render();
+  hideChoice();
+  showImport(skipped
+    ? "Added " + batch.length + " entries from the file. Skipped " + skipped + " rows it could not read."
+    : "Added " + batch.length + " entries from the file.");
+}
+function applyReplace(batch) {
+  if (!confirm(REPLACE_CONFIRM)) return;
+  entries = batch.slice();
+  if (editing && !entries.some((entry) => entry.id === editing)) resetForm();
+  showAllIfNeeded(entries);
+  saveStore();
+  render();
+  hideChoice();
+  showImport("Replaced the list with " + entries.length + " entries from the file.");
+}
+function showInvalid() {
+  hideChoice();
+  showImport(INVALID_FILE);
+}
+function handleImport(text) {
+  const trimmed = String(text).replace(/^\uFEFF/, "").trim();
+  if (!trimmed) { showInvalid(); return; }
+  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+    const parsed = entriesFromJson(trimmed);
+    if (!parsed) { showInvalid(); return; }
+    if (!entries.length) { applyAdd(parsed); return; }
+    pendingFileEntries = parsed;
+    $("import-choice").hidden = false;
+    showImport("");
+    return;
+  }
+  const csv = entriesFromCsv(text);
+  if (!csv) { showInvalid(); return; }
+  applyCsv(csv.entries, csv.skipped);
 }
 
 $("kind-expense").addEventListener("click", () => setKind("expense"));
@@ -500,25 +763,59 @@ $("editor").addEventListener("submit", (event) => {
   render();
 });
 $("export").addEventListener("click", downloadCsv);
+$("save-copy").addEventListener("click", downloadFullCopy);
+$("banner-save").addEventListener("click", downloadFullCopy);
+$("open-copy").addEventListener("click", () => {
+  $("open-file").value = "";
+  $("open-file").click();
+});
+$("open-file").addEventListener("change", () => {
+  const file = $("open-file").files && $("open-file").files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => handleImport(String(reader.result || ""));
+  reader.onerror = () => showInvalid();
+  reader.readAsText(file);
+});
+$("import-add").addEventListener("click", () => {
+  if (!pendingFileEntries) return;
+  applyAdd(pendingFileEntries);
+});
+$("import-replace").addEventListener("click", () => {
+  if (!pendingFileEntries) return;
+  applyReplace(pendingFileEntries);
+});
+$("import-cancel").addEventListener("click", () => {
+  hideChoice();
+});
 $("clear").addEventListener("click", () => {
   if (!entries.length) return;
-  if (!confirm("Delete every entry in this log? This cannot be undone.")) return;
+  if (!confirm(CLEAR_CONFIRM)) return;
   entries = [];
+  hideChoice();
   saveStore();
   resetForm();
   render();
 });
 
+const canStore = storageProbe();
+setStoreNote(!canStore);
 try {
   const stored = JSON.parse(localStorage.getItem(KEY) || "null");
   if (stored && Array.isArray(stored.entries)) {
-    entries = stored.entries.filter((entry) => entry && (entry.kind === "expense" || entry.kind === "trip") && typeof entry.id === "string");
+    entries = stored.entries.filter(isValidEntry);
   }
+  if (stored && typeof stored.lastFullCopyAt === "string") lastFullCopyAt = stored.lastFullCopyAt;
+  if (stored && typeof stored.lastFullCopySig === "string") lastFullCopySig = stored.lastFullCopySig;
 } catch (err) {
   entries = [];
+  lastFullCopyAt = null;
+  lastFullCopySig = null;
 }
+if (!canStore) setStoreNote(true);
 $("date").value = todayISO();
 render();
+updateReminder();
 </script>
 </body>
 </html>

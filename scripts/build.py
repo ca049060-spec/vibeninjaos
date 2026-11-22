@@ -36,6 +36,7 @@ STATUS = {
     "live": ("Live", "Try it now. It works today."),
     "by-request": ("By request", "Works today. Done for you by request while it is finished."),
     "workbench": ("On the workbench", "Being designed or built. Not ready yet."),
+    "preview": ("Preview", "This preview is a working page you can try. It is not on the public tools list yet."),
 }
 REQUIRED = ["name", "tagline", "slug", "status", "category", "audience", "before", "after",
             "try_url", "try_label", "price_note"]

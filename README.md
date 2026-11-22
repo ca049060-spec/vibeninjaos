@@ -11,7 +11,7 @@ Website for vibeninjaos.app: the home for the tools Shawn builds with AI, and la
 - `/tools/<slug>/app/` the tool itself, when it is a static web app (QuickQuote is). A tool that needs a server gets its own Netlify site on a subdomain, `<slug>.vibeninjaos.app`, and its card's `try_url` points there.
 - `/how-it-works.html`, `/contact.html`, `/list-your-tool.html` (the start of the marketplace: a Netlify form), `/thanks.html`.
 
-Tool status is one of three words, shown on every card: `live` (works today), `by-request` (works, done for you while it is finished), `workbench` (not ready). Prices appear only as notes on the card, marked planned until something is for sale.
+Tool status is a word on every card: `live` (works today), `by-request` (works, done for you while it is finished), `workbench` (not ready), or `preview` (a working page that is not on the public tools list yet). Prices appear as notes on the card, marked planned until something is for sale.
 
 ## Adding or changing a tool
 
