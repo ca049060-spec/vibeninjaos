@@ -732,20 +732,6 @@ main a:not(.btn) { color: var(--blue); }
 
 .cta-banner .btn { margin-top: 0.5rem; }
 
-.content-todo {
-  width: min(1120px, calc(100% - 2rem));
-  margin: 0 auto 3rem;
-  padding: 1rem 1.1rem;
-  border-left: 4px solid var(--orange);
-  background: var(--white);
-  border-radius: 0 0.75rem 0.75rem 0;
-  color: var(--muted-light);
-}
-
-.content-todo p { margin: 0; }
-
-.content-todo strong { color: var(--navy); }
-
 /* Inner pages */
 
 main.container { padding-top: 2.5rem; padding-bottom: 3rem; }
