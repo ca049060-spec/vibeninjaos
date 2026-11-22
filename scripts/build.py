@@ -104,6 +104,16 @@ def card_html(t: dict, level: str = "h3") -> str:
             f'<a href="{url}" class="btn btn-secondary">Open</a></article>')
 
 
+def shelf_html(tools: list[dict]) -> str:
+    live = [t for t in tools if t["status"] == "live"]
+    rows = "".join(
+        f'<li><a href="/tools/{t["slug"]}/"><span>{E(t["name"])}</span>'
+        f'<small>{E(t["category"])}</small></a></li>'
+        for t in live
+    )
+    return f'<ol class="hero-shelf-list">{rows}</ol>'
+
+
 def workbench_list(tools: list[dict]) -> str:
     rows = "".join(
         f'<li><a href="/tools/{t["slug"]}/">{E(t["name"])}</a>: {E(t["tagline"])}</li>' for t in tools)
@@ -232,6 +242,7 @@ def build() -> dict[Path, str]:
             bench = [t for t in tools if t["status"] == "workbench"]
             text = replace_block(text, "featured", f'<div class="tool-grid">{"".join(card_html(t) for t in ready)}</div>')
             text = replace_block(text, "workbench", workbench_list(bench))
+            text = replace_block(text, "shelf", shelf_html(tools))
         out[path] = text
 
     urls = ["/", "/tools/", "/how-it-works.html", "/list-your-tool.html", "/contact.html"]
