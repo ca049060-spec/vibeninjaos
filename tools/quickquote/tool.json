@@ -7,14 +7,35 @@
   "category": "Trades & field work",
   "audience": "Sealing, line painting and pressure-washing contractors",
   "before": "The estimate gets worked out on paper or in your head, then typed up again at night. Prices drift from job to job and the customer waits a day for a number.",
-  "after": "Pick the service, enter the measurements, and get a clean quote with your own prices while you are still standing in the driveway. Sealing and repair, line painting and pressure washing.",
+  "after": "Pick the service, enter the measurements, and get a clean quote with your own prices while you are still standing in the driveway.",
   "try_url": "/tools/quickquote/app/",
   "try_label": "Open QuickQuote",
   "price_note": "Free to use.",
   "privacy_note": "",
+  "screenshot": {
+    "src": "/images/quickquote-screen.png",
+    "width": 390,
+    "height": 1021,
+    "alt": "QuickQuote on a phone: a 60 by 12 foot driveway with seal coat and 40 feet of crack sealing comes to a quote of $510, with a $153 deposit to schedule.",
+    "caption": "A real quote: a 60 by 12 foot driveway, seal coat and crack sealing."
+  },
+  "steps": [
+    {
+      "title": "Pick the service",
+      "text": "Sealing and repair, line painting, or pressure washing."
+    },
+    {
+      "title": "Enter the size",
+      "text": "Length and width, plus cracks, potholes or edges if the job has them."
+    },
+    {
+      "title": "Text the quote",
+      "text": "The total, the deposit and every line item, ready to send before you get back in the truck."
+    }
+  ],
   "origin": "Built first for Seals Go Pro, a driveway sealing business. Type your own business name in Settings.",
   "built_with": "One web page, built with AI. Works on a phone.",
   "repo": "https://github.com/ca049060-spec/quickquote",
   "source_commit": "9ee488c90df4b3d7c93764ea4b26fcb00e0c2fb7",
-  "updated": "2026-11-11"
+  "updated": "2026-11-23"
 }

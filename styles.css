@@ -353,6 +353,7 @@ main a:not(.btn) { color: var(--blue); }
 .hero h1 {
   color: var(--white);
   max-width: 14ch;
+  text-wrap: balance;
   margin: 0 0 1.25rem;
   /* Negative tracking disables kerning, which leaves a gap before the comma and period. */
   letter-spacing: normal;
@@ -798,13 +799,7 @@ main.container { padding-top: 2.5rem; padding-bottom: 3rem; }
 }
 
 @media (min-width: 900px) {
-  .hero {
-    min-height: calc(100vh - 4rem);
-    display: flex;
-    align-items: center;
-  }
-
-  .hero { padding: 2.5rem 0; }
+  .hero { padding: 5.5rem 0 6rem; }
 
   .hero-grid {
     display: grid;
@@ -845,21 +840,83 @@ main.container { padding-top: 2.5rem; padding-bottom: 3rem; }
   }
 }
 
-/* Home page screenshot of QuickQuote (2026-11-19) */
-.shot { margin: 2.5rem 0 0; }
+/* Home page: the tools that are ready, one card each (2026-11-23) */
+.today-list { display: grid; gap: 1.25rem; }
+
+.today-card { display: grid; gap: 1.75rem; padding: 1.75rem; }
+
+.today-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.today-copy h3 { margin: 0; font-size: 1.6rem; }
+
+.today-copy h3 a { color: var(--navy); text-decoration: none; }
+
+.today-copy p { margin: 0; }
+
+.today-tag { font-size: 1.15rem; line-height: 1.45; color: var(--navy); max-width: 34rem; }
+
+.today-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 0.6rem;
+}
+
+.workbench-line { font-weight: 700; color: var(--navy); max-width: 46rem; }
+
+.data-note { margin-top: 2rem; max-width: 46rem; }
+
+/* A tool's screenshot, on its home card and on its own page */
+.shot { margin: 0; }
+
 .shot img {
   display: block;
   width: 100%;
-  max-width: 22rem;
+  max-width: 15rem;
   height: auto;
   margin: 0 auto;
-  border-radius: 1.5rem;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  border-radius: 1.25rem;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.18);
 }
-.shot figcaption { color: #cbd5e1; font-size: 0.9rem; text-align: center; margin-top: 0.75rem; }
-.cta-note { margin-top: 1.25rem; font-size: 1rem; }
-.cta-band .cta-note a { color: var(--white); text-decoration: underline; }
+
+.shot figcaption {
+  color: var(--muted-light);
+  font-size: 0.9rem;
+  text-align: center;
+  max-width: 18rem;
+  margin: 0.75rem auto 0;
+}
+
+/* On a home card the screenshot shows its lower part: the services ticked and the quote they make.
+   The whole screen is on the tool's own page. */
+.today-card .shot img {
+  aspect-ratio: 390 / 664;
+  object-fit: cover;
+  object-position: 50% 88.7%;
+}
+
+.tool-hero { display: grid; gap: 1.5rem; }
+
+.tool-hero .shot img { max-width: 18rem; }
+
+@media (min-width: 760px) {
+  .today-card.has-shot {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    align-items: center;
+    gap: 2.5rem;
+  }
+}
+
 @media (min-width: 900px) {
-  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 4rem; align-items: center; }
-  .shot { margin-top: 0; }
+  .tool-hero {
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    gap: 3rem;
+    align-items: start;
+  }
 }
