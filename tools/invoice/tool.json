@@ -1,6 +1,7 @@
 {
   "name": "Simple Invoice",
   "tagline": "Write an invoice on your phone and save it as a PDF.",
+  "job": "Write the invoice",
   "slug": "invoice",
   "order": 4,
   "status": "live",
