@@ -51,13 +51,13 @@ MARK = ('<svg class="mark" viewBox="0 0 32 32" width="32" height="32" aria-hidde
         '<path fill="#0F172A" d="M16 4.5 18.7 13.3 27.5 16 18.7 18.7 16 27.5 13.3 18.7 4.5 16 13.3 13.3Z"/>'
         '</svg>')
 
+# Plus Jakarta Sans is self-hosted from /fonts and declared in styles.css.
+# Do not add a fonts.googleapis.com or fonts.gstatic.com link here.
+# That request would send the visitor's IP address to Google on every page.
 HEAD = """
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <meta name="theme-color" content="#0F172A">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&display=swap">
   """
 
 FOOTER = ('<footer class="site-footer"><div class="container footer-inner">'
