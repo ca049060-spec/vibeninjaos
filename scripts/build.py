@@ -5,7 +5,7 @@ This script reads every card and writes:
 
   tools/<slug>/index.html   the tool's own page
   tools/index.html          the catalog of all tools
-  index.html                the featured and workbench blocks on the home page
+  index.html                the works-today and workbench blocks on the home page
   every page                the shared head links, header and footer
   sitemap.xml               every public page
 
@@ -61,7 +61,7 @@ HEAD = """
   """
 
 FOOTER = ('<footer class="site-footer"><div class="container footer-inner">'
-          '<p>VibeNinjaOS (vibeninjaos.app): working tools, built with AI.</p>'
+          '<p>VibeNinjaOS (vibeninjaos.app)</p>'
           '<nav aria-label="Footer"><a href="/tools/">All tools</a>'
           '<a href="/how-it-works.html">How it works</a>'
           '<a href="/list-your-tool.html">List your tool</a>'
@@ -82,7 +82,6 @@ def header(current: str) -> str:
         '  <header class="site-header"><div class="container nav-row">'
         f'<a href="/" class="brand">{MARK}<span class="brand-text">VibeNinja<span class="brand-os">OS</span></span></a>'
         f'<nav class="nav-desktop" aria-label="Main"><ul class="nav-list">{links}</ul></nav>'
-        '<p class="preview-tag">Early preview<span class="sr-only">. Some tools are live and some are still being built. Each tool says which.</span></p>'
         '<details class="nav-details"><summary class="nav-toggle">'
         '<span class="nav-open-label">Menu</span><span class="nav-close-label">Close</span></summary>'
         f'<nav aria-label="Main"><ul class="nav-list">{links}</ul></nav>'
@@ -117,6 +116,41 @@ def card_html(t: dict, level: str = "h3") -> str:
             f'<p>{E(t["tagline"])}</p>'
             f'<p class="tool-meta">{E(t["category"])}</p>'
             f'<a href="{url}" class="btn btn-secondary">Open</a></article>')
+
+
+def shot_html(t: dict) -> str:
+    """The tool's screenshot, from the optional "screenshot" field of its card."""
+    s = t.get("screenshot")
+    if not s:
+        return ""
+    return (f'<figure class="shot"><img src="{E(s["src"])}" width="{int(s["width"])}" '
+            f'height="{int(s["height"])}" alt="{E(s["alt"])}">'
+            f'<figcaption>{E(s["caption"])}</figcaption></figure>')
+
+
+def today_card(t: dict) -> str:
+    """A home-page card for a tool that works today: live or by request."""
+    url = f"/tools/{t['slug']}/"
+    for_label = E("Who it's for")
+    shot = shot_html(t)
+    cls = "card today-card has-shot" if shot else "card today-card"
+    return (f'<article class="{cls}"><div class="today-copy">{badge(t)}'
+            f'<h3><a href="{url}">{E(t["name"])}</a></h3>'
+            f'<p class="today-tag">{E(t["tagline"])}</p>'
+            f'<p class="tool-meta">{for_label}: {E(t["audience"])}</p>'
+            f'<p class="status-help">{STATUS[t["status"]][1]}</p>'
+            f'<div class="today-actions"><a href="{E(t["try_url"])}" class="btn btn-primary">{E(t["try_label"])}</a>'
+            f'<a href="{url}" class="text-link">More about {E(t["name"])}</a></div>'
+            f'</div>{shot}</article>')
+
+
+def workbench_line(tools: list[dict]) -> str:
+    """The home page names the workbench tools and no more: their pages say what they will do."""
+    links = [f'<a href="/tools/{t["slug"]}/">{E(t["name"])}</a>' for t in tools]
+    if not links:
+        return '<p class="muted">Nothing is on the workbench right now.</p>'
+    names = links[0] if len(links) == 1 else ", ".join(links[:-1]) + " and " + links[-1]
+    return f'<p class="workbench-line">{names}.</p>'
 
 
 def workbench_list(tools: list[dict]) -> str:
@@ -160,15 +194,32 @@ def tool_page(t: dict) -> str:
     facts = "".join(f"<div><dt>{E(k)}</dt><dd>{E(v)}</dd></div>" for k, v in rows)
     origin = f'<p class="note">{E(t["origin"])}</p>' if t.get("origin") else ""
     primary = "btn-primary" if t["status"] != "workbench" else "btn-secondary"
-    body = f"""    <section class="page-intro tool-intro">
+    intro = f"""<section class="page-intro tool-intro">
       <p class="eyebrow"><a href="/tools/">Tools</a> / {E(t["category"])}</p>
       {badge(t)}
       <h1>{E(t["name"])}</h1>
       <p class="lead">{E(t["tagline"])}</p>
       <p class="status-help">{STATUS[t["status"]][1]}</p>
       <div class="cta-group"><a href="{E(t["try_url"])}" class="btn {primary}">{E(t["try_label"])}</a></div>
+    </section>"""
+    shot = shot_html(t)
+    if shot:
+        intro = f'<div class="tool-hero">\n    {intro}\n    {shot}\n    </div>'
+    steps = ""
+    if t.get("steps"):
+        items = "".join(
+            f'<li><span class="step-num">{i}</span><h3>{E(s["title"])}</h3><p>{E(s["text"])}</p></li>'
+            for i, s in enumerate(t["steps"], 1))
+        words = {2: "Two", 3: "Three", 4: "Four", 5: "Five"}
+        heading = f"{words[len(t['steps'])]} steps." if len(t["steps"]) in words else "The steps."
+        steps = f"""
+    <section class="card-section" aria-labelledby="steps-title">
+      <h2 id="steps-title">{heading}</h2>
+      <ol class="steps">{items}</ol>
     </section>
-
+"""
+    body = f"""    {intro}
+{steps}
     <section class="card-section">
       <div class="grid-2">
         <div class="card card-before"><h2>Before</h2><p>{E(t["before"])}</p></div>
@@ -246,13 +297,14 @@ def build() -> dict[Path, str]:
         text = replace_block(text, "header", header(current))
         text = replace_block(text, "footer", FOOTER)
         if name == "index.html":
-            # QuickQuote is the home page's one door, so it is not repeated here.
-            ready = [t for t in tools if t["status"] != "workbench" and t["slug"] != "quickquote"]
+            # The home page is the front door for every tool. A tool appears under "works today"
+            # only when its card says live or by-request; workbench tools are named, never offered.
+            ready = [t for t in tools if t["status"] != "workbench"]
             bench = [t for t in tools if t["status"] == "workbench"]
-            featured = (f'<div class="tool-grid">{"".join(card_html(t) for t in ready)}</div>'
-                        if ready else '<p class="muted">The other tools are on the workbench.</p>')
-            text = replace_block(text, "featured", featured)
-            text = replace_block(text, "workbench", workbench_list(bench))
+            today = (f'<div class="today-list">{"".join(today_card(t) for t in ready)}</div>'
+                     if ready else '<p class="muted">Nothing works today yet.</p>')
+            text = replace_block(text, "today", today)
+            text = replace_block(text, "workbench", workbench_line(bench))
         out[path] = text
 
     urls = ["/", "/tools/", "/how-it-works.html", "/list-your-tool.html", "/contact.html"]

@@ -4,7 +4,7 @@ Website for vibeninjaos.app: the home for the tools Shawn builds with AI, and la
 
 ## How the site is laid out
 
-- `/` home: one promise and one next step, open QuickQuote. Other tools and the workbench sit below that. How the tools get built lives on `/how-it-works.html`.
+- `/` home: the front door for every tool. The tools that work today (status `live` or `by-request`) each get a card; the workbench tools are named and linked; then the two ways in, ask for a tool or list one. Each tool's own pitch lives on its page, so QuickQuote's driveway steps and screenshot are on `/tools/quickquote/`. How the tools get built lives on `/how-it-works.html`.
 - `/tools/` the catalog. Every tool has its own space at `/tools/<slug>/`.
 - `/tools/<slug>/tool.json` the tool's card (its PROJECT_HANDOFF): name, status, problem, solution, who it is for, price note, where to try it.
 - `/tools/<slug>/index.html` the tool's page, generated from the card.
@@ -22,7 +22,7 @@ python scripts/build.py                           # writes the tool page, catalo
 python scripts/build.py --check                   # exit 1 if any page is out of date
 ```
 
-The shared head links, header and footer live in `scripts/build.py` and are written into every page between the `<!-- site:head -->`, `<!-- site:header -->` and `<!-- site:footer -->` markers. Edit them there, not in the pages. The home page leads with QuickQuote, so the generated block of other tools leaves QuickQuote out. Standard library Python only; Netlify runs no build step, the output is committed.
+The shared head links, header and footer live in `scripts/build.py` and are written into every page between the `<!-- site:head -->`, `<!-- site:header -->` and `<!-- site:footer -->` markers. Edit them there, not in the pages. The home page's `<!-- site:today -->` and `<!-- site:workbench -->` blocks are generated from the cards too, so a tool shows on the home page as working only when its card says `live` or `by-request`. A card may also carry a `screenshot` (src, width, height, alt, caption) and `steps` (title and text for each); the tool's page shows them, and its home card shows the screenshot. Standard library Python only; Netlify runs no build step, the output is committed.
 
 Plus Jakarta Sans is self-hosted from `/fonts`, with `@font-face` rules in `styles.css` and the license in `fonts/OFL.txt`. The shared head must not link to Google Fonts or any other font host. A font host request would send the visitor's IP address off this site.
 
