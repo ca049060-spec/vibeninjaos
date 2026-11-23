@@ -107,8 +107,8 @@ def card_html(t: dict, level: str = "h3") -> str:
 def shelf_html(tools: list[dict]) -> str:
     live = [t for t in tools if t["status"] == "live"]
     rows = "".join(
-        f'<li><a href="/tools/{t["slug"]}/"><span>{E(t["name"])}</span>'
-        f'<small>{E(t["category"])}</small></a></li>'
+        f'<li><a href="/tools/{t["slug"]}/"><span>{E(t.get("job") or t["tagline"])}</span>'
+        f'<small>{E(t["name"])}</small></a></li>'
         for t in live
     )
     return f'<ol class="hero-shelf-list">{rows}</ol>'
@@ -195,8 +195,8 @@ def catalog(tools: list[dict]) -> str:
     </section>
 
     <section class="card-section">
-      <h2>On the workbench</h2>
-      <p class="muted">Being designed or built. Open one to see the problem it solves, or ask to hear when it is ready.</p>
+      <h2>Still being built</h2>
+      <p class="muted">Not ready to use. Open one to see what it is for.</p>
       {workbench_list(bench)}
     </section>
 

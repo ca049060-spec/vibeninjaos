@@ -223,7 +223,7 @@ h1 {
 }
 
 .hero h1 {
-  max-width: 12ch;
+  max-width: none;
 }
 
 h2 {
@@ -266,19 +266,32 @@ h3 {
 
 .hero-shelf-list {
   list-style: none;
+  counter-reset: job;
+}
+
+.hero-shelf-list li {
+  counter-increment: job;
 }
 
 .hero-shelf-list a {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
-  padding: 0.95rem 0;
+  display: grid;
+  grid-template-columns: 1.4rem 1fr;
+  column-gap: 0.7rem;
+  row-gap: 0.1rem;
+  padding: 0.85rem 0;
   border-top: 1px solid var(--header-line);
   color: var(--cream);
   text-decoration: none;
   font-family: var(--sans);
   font-weight: 650;
+}
+
+.hero-shelf-list a::before {
+  content: counter(job);
+  grid-row: 1 / span 2;
+  color: #fdba74;
+  font-size: 0.85rem;
+  padding-top: 0.15rem;
 }
 
 .hero-shelf-list a:hover span,
@@ -290,7 +303,7 @@ h3 {
   color: #a8a29e;
   font-weight: 500;
   font-size: 0.85rem;
-  text-align: right;
+  grid-column: 2;
 }
 
 .card-section {

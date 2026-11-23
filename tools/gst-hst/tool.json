@@ -1,6 +1,7 @@
 {
   "name": "GST/HST Calculator",
   "tagline": "Work out GST, HST and provincial sales tax for a sale in any province.",
+  "job": "Add the sales tax",
   "slug": "gst-hst",
   "order": 3,
   "status": "live",

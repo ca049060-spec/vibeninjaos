@@ -1,6 +1,7 @@
 {
   "name": "Expense & Mileage Log",
   "tagline": "Keep job expenses and kilometres on your phone, then download a CSV.",
+  "job": "Log the expenses",
   "slug": "expense-log",
   "order": 5,
   "status": "live",
