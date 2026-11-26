@@ -4,7 +4,7 @@ Website for vibeninjaos.app: the home for the tools Shawn builds with AI, and la
 
 ## How the site is laid out
 
-- `/` home: one promise and one next step, open QuickQuote. Other tools and the workbench sit below that. How the tools get built lives on `/how-it-works.html`.
+- `/` home: speaks to individuals and solo trades, then a Pick your job row for QuickQuote. The Local Market Report sits in the advisory section lower on the page. The workbench list follows the jobs. How the tools get built lives on `/how-it-works.html`.
 - `/tools/` the catalog. Every tool has its own space at `/tools/<slug>/`.
 - `/tools/<slug>/tool.json` the tool's card (its PROJECT_HANDOFF): name, status, problem, solution, who it is for, price note, where to try it.
 - `/tools/<slug>/index.html` the tool's page, generated from the card.
@@ -22,7 +22,7 @@ python scripts/build.py                           # writes the tool page, catalo
 python scripts/build.py --check                   # exit 1 if any page is out of date
 ```
 
-The shared head links, header and footer live in `scripts/build.py` and are written into every page between the `<!-- site:head -->`, `<!-- site:header -->` and `<!-- site:footer -->` markers. Edit them there, not in the pages. The home page leads with QuickQuote, so the generated block of other tools leaves QuickQuote out. Standard library Python only; Netlify runs no build step, the output is committed.
+The shared head links, header and footer live in `scripts/build.py` and are written into every page between the `<!-- site:head -->`, `<!-- site:header -->` and `<!-- site:footer -->` markers. Edit them there, not in the pages. The home Pick your job row is generated from tools whose status is live. On main that is QuickQuote. The Local Market Report is by request and sits in the advisory section. The workbench list is the rest. Standard library Python only; Netlify runs no build step, the output is committed.
 
 Plus Jakarta Sans is self-hosted from `/fonts`, with `@font-face` rules in `styles.css` and the license in `fonts/OFL.txt`. The shared head must not link to Google Fonts or any other font host. A font host request would send the visitor's IP address off this site.
 

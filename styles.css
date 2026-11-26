@@ -352,7 +352,7 @@ main a:not(.btn) { color: var(--blue); }
 
 .hero h1 {
   color: var(--white);
-  max-width: 14ch;
+  max-width: 18ch;
   margin: 0 0 1.25rem;
   /* Negative tracking disables kerning, which leaves a gap before the comma and period. */
   letter-spacing: normal;
@@ -696,6 +696,26 @@ main a:not(.btn) { color: var(--blue); }
 
 .cta-band h2 { color: var(--white); max-width: 16ch; }
 
+.band-advisory {
+  background: var(--white);
+  border-top: 3px solid var(--navy);
+  border-bottom: 3px solid var(--navy);
+}
+
+.advisory-card { margin: 0 0 1.25rem; max-width: 28rem; }
+
+@media (max-width: 699px) {
+  .hero { padding: 1.35rem 0 0.85rem; }
+  .hero h1 { font-size: 2rem; margin-bottom: 0.65rem; }
+  .hero .kicker { margin-bottom: 0.5rem; gap: 0.35rem; }
+  .hero .lede { font-size: 1rem; line-height: 1.4; margin-bottom: 0.8rem; }
+  #jobs { padding: 1rem 0 1.25rem; }
+  #jobs .kicker { margin-bottom: 0.45rem; }
+  #jobs h2 { margin-bottom: 0.35rem; font-size: 1.65rem; }
+  #jobs .section-lead { margin-bottom: 0.75rem; font-size: 1rem; }
+  #jobs .tool-card { padding: 0.9rem 1rem; gap: 0.35rem; }
+}
+
 .cta-band p { color: #e2e8f0; font-size: 1.2rem; }
 
 .cta-banner {
@@ -711,20 +731,6 @@ main a:not(.btn) { color: var(--blue); }
 .cta-banner p { color: #e2e8f0; }
 
 .cta-banner .btn { margin-top: 0.5rem; }
-
-.content-todo {
-  width: min(1120px, calc(100% - 2rem));
-  margin: 0 auto 3rem;
-  padding: 1rem 1.1rem;
-  border-left: 4px solid var(--orange);
-  background: var(--white);
-  border-radius: 0 0.75rem 0.75rem 0;
-  color: var(--muted-light);
-}
-
-.content-todo p { margin: 0; }
-
-.content-todo strong { color: var(--navy); }
 
 /* Inner pages */
 
@@ -809,12 +815,6 @@ main.container { padding-top: 2.5rem; padding-bottom: 3rem; }
 }
 
 @media (min-width: 900px) {
-  .hero {
-    min-height: calc(100vh - 4rem);
-    display: flex;
-    align-items: center;
-  }
-
   .hero { padding: 2.5rem 0; }
 
   .hero-grid {
@@ -834,7 +834,7 @@ main.container { padding-top: 2.5rem; padding-bottom: 3rem; }
 
   .split { grid-template-columns: 1.05fr 0.95fr; gap: 4rem; }
   .steps, .grid-3 { grid-template-columns: repeat(3, 1fr); }
-  .fact-row { grid-template-columns: repeat(3, 1fr); }
+  .fact-row { grid-template-columns: 1fr 1fr; }
   .grid-4 { grid-template-columns: 1fr 1fr; }
   .qq-device { margin-left: auto; }
 }
